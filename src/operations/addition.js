@@ -4,11 +4,12 @@ const random = require('../helpers/random');
 const DIFFICULTY_PROFILES = {
     0: {
         range: [3, 60],
-        numberOfTerms: 2 ,
+        numberOfTerms: 2,
         timeLimit: 7000, // millis,
         baseAward: 5,
         timeAward: 2,
-        timePenalty: 2
+        timePenalty: 2,
+        tooltipIntro: "Easy peasy.\n"
     },
     1: {
         range: [-50, 100],
@@ -16,7 +17,8 @@ const DIFFICULTY_PROFILES = {
         timeLimit: 10000,
         baseAward: 5,
         timeAward: 2,
-        timePenalty: 2
+        timePenalty: 2,
+        tooltipIntro: "Sign rules.\n"
     }
 };
 
@@ -26,7 +28,7 @@ const addition = async (operation, difficulty) => {
     const addends = [];
     const numberOfTerms = difficultyProfile.numberOfTerms;
 
-    for (let i = 0; i < numberOfTerms; i ++) {
+    for (let i = 0; i < numberOfTerms; i++) {
         const addend = random(...difficultyProfile.range);
         addends.push(addend);
     }
@@ -36,7 +38,7 @@ const addition = async (operation, difficulty) => {
     const formattedAddends = addends.map((addend) => addend < 0 ? `(${addend})` : `${addend}`);
 
     const questionLatex = formattedAddends.join(' + ');
-    
+
     const question = new Question({
         author: 'DrillBot',
         question_type: operation,
@@ -76,7 +78,19 @@ const addition = async (operation, difficulty) => {
     return question;
 };
 
+const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
+    const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
+
+    const message = `${difficultyProfile.tooltipIntro || ''}` +
+        `Typically ${difficultyProfile.numberOfTerms} terms, ` +
+        `ranging from ${difficultyProfile.range[0]} to ${difficultyProfile.range[1]}. ` +
+        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+
+    return { [difficulty]: message };
+});
+
 module.exports = {
     exec: addition,
-    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level))
+    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
+    tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
 };

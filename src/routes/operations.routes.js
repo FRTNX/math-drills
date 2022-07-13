@@ -11,6 +11,9 @@ router.route('/api/v0/operations')
 router.route('/api/v0/listops')
     .get(opCtrl.listOperations);
 
+router.route('/api/v0/tooltip')
+    .get(opCtrl.fetchTooltipMessage);
+
 // router.param('userId', userCtrl.userByID);
 
 // examples on protecting routes for later

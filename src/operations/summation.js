@@ -8,7 +8,9 @@ const DIFFICULTY_PROFILES = {
         timeLimit: 30000,
         baseAward: 7,
         timeAward: 1,
-        timePenalty: 3
+        timePenalty: 3,
+        tooltipIntro: 'This op is so you dont think Math Drills is soft. ' +
+            'More complex ops on the way.'
     }
 };
 
@@ -83,7 +85,17 @@ const summation = async (operation, difficulty) => {
     return question;
 };
 
+const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
+    const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
+
+    const message = `${difficultyProfile.tooltipIntro || ''} ` +
+        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+
+    return { [difficulty]: message };
+});
+
 module.exports = {
     exec: summation,
-    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level))
+    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
+    tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
 };

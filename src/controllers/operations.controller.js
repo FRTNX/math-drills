@@ -16,6 +16,9 @@ const summation = require('../operations/summation');
 const lcm = require('../operations/lcm');
 const hcf = require('../operations/hcf');
 
+const fractions = require('../operations/fractions');
+const percentage = require('../operations/percentage');
+
 const removeSecrets = (question) => {
     question.correct_answer = undefined;
     question.base_award = undefined,
@@ -64,7 +67,9 @@ const OPERATIONS_MAP = {
     prime_factorization: primeFactorization,
     summation: summation,
     lcm: lcm,
-    hcf: hcf
+    hcf: hcf,
+    fractions: fractions,
+    percentage: percentage
 };
 
 // if there's no question in the db matching requested criterea
@@ -107,8 +112,25 @@ const listOperations = (request, response) => {
     response.json(operationsDetails);
 };
 
+const fetchTooltipMessage = async (request, response) => {
+    try {
+        const [operation, difficulty] = [request.query.op, request.query.difficulty];
+        // const operation = request.query.op;
+        // const difficulty = request.query.difficulty;
+
+        const message = OPERATIONS_MAP[operation].tooltips[difficulty];
+
+        response.json({ message });
+    } catch (error) {
+        console.log(error)
+        return response.status(400).json({
+            error: errorHandler.getErrorMessage(error)
+        });
+    }
+};
 
 module.exports = {
     fetchQuestion,
-    listOperations
+    listOperations,
+    fetchTooltipMessage
 };

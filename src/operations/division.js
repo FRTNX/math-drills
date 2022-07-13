@@ -8,7 +8,7 @@ const DIFFICULTY_PROFILES = {
         timeLimit: 20000, // millis
         baseAward: 5,
         timeAward: 2,
-        timePenalty: 1
+        timePenalty: 1,
     },
     0: {
         quotientRange: [-2, 20],
@@ -91,7 +91,18 @@ const division = async (operation, difficulty) => {
     return question;
 };
 
+const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
+    const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
+
+    const message = `${difficultyProfile.tooltipIntro || ''}` +
+        `Where solo fractions appear simply perform the indicated division. ` +
+        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+
+    return { [difficulty]: message };
+});
+
 module.exports = {
     exec: division,
-    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level))
+    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
+    tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
 };

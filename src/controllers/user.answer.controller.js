@@ -1,5 +1,6 @@
 const UserAnswer = require('../models/user.answer.model');
-const Question = require('../models/question.model')
+const Question = require('../models/question.model');
+const AbortedQuestion = require('../models/aborted.question.model');
 const errorHandler = require('./../helpers/dbErrorHandler');
 const evaluations = require('./../helpers/evaluations'); // use this eventually
 
@@ -56,6 +57,8 @@ const saveUserAnswer = async (request, response) => {
 
         await userAnswer.save();
 
+        // todo: check for previously aborted question, remove if exists
+
         const result = {
             currentRating,
             isCorrect: answer.isCorrect,
@@ -63,6 +66,44 @@ const saveUserAnswer = async (request, response) => {
         };
 
         return response.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+        return response.status(400).json({
+            error: errorHandler.getErrorMessage(error)
+        });
+    }
+};
+
+const abortQuestion = async (request, response) => {
+    try {
+        const userId = request.query.user_id;
+        const questionId = request.query.question_id;
+
+        const question = await Question.findOne({ _id: questionId });
+
+        // await AbortedQuestion.deleteMany({})
+
+        if (!question) {
+            throw new Error('Question not found');
+        }
+
+        try {
+            const abortedQuestion = new AbortedQuestion({
+                user_id: userId,
+                question_id: questionId,
+                question_type: question.question_type
+            });
+
+            console.log('Aborting question: ', abortedQuestion)
+            await abortedQuestion.save();
+        } catch (error) {
+            console.log(error);
+        }
+
+        const abortedQuestions = await AbortedQuestion.find({ user_id: userId })
+        console.log('Found aborted questions for user: ', abortedQuestions)
+
+        return response.status(200).json({ result: 'SUCCESS' });
     } catch (error) {
         console.log(error);
         return response.status(400).json({
@@ -91,130 +132,8 @@ const fetchUserAnswers = async (request, response) => {
     }
 };
 
-const fetchRatingProfile = (userRatings) => {
-    if (userRatings.length === 0) {
-        return { name: 'zygote', color: 'default' }
-    }
-
-    if (userRatings.length > 0 && userRatings.length < 10) {
-        return { name: 'embryo', color: 'embryo', graphOptions: ['bar2'] };
-    }
-
-    if (userRatings.length >= 10 && userRatings[0] < 100) {
-        return { name: 'grasshopper', color: 'primary', graphOptions: ['bar3'] };
-    }
-
-    if (userRatings.length > 0 && userRatings[0] >= 100) {
-        return { name: 'mantis', color: 'primary', graphOptions: ['bar3'] };
-    }
-
-    // todo: add more, adjust conditions, move to separate file (rating.handler.js)
-};
-
-const fetchRatingHistory = async (request, response) => {
-    try {
-        let query = {
-            user_id: request.query.user_id,
-            question_type: request.query.question_type
-        };
-
-        const limit = request.query.limit
-            ? request.query.limit
-            : 10
-
-        const userAnswers = await UserAnswer.find(query)
-            .select('rating created')
-            .sort('-created')
-            .limit(limit)
-            .exec();
-
-        console.log('Got result: ', userAnswers.map((r) => r.rating));
-
-        const userRating = userAnswers.map((r) => r.rating);
-        const ratingProfile = fetchRatingProfile(userRating);
-
-        console.log('Got rating profile: ', ratingProfile)
-
-        let result;
-
-        if (ratingProfile.name === 'zygote') {
-            result = {
-                ratings: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                ratingDetails: ratingProfile
-            };
-        }
-
-        else {
-            result = {
-                ratings: userRating.reverse(),
-                ratingDetails: ratingProfile
-            }
-        }
-
-        console.log('Returning result: ', result)
-
-        return response.status(200).json(result);
-    } catch (error) {
-        console.log(error);
-        return response.status(400).json({
-            error: errorHandler.getErrorMessage(error)
-        });
-    }
-};
-
-const fetchUserStats = async (request, response) => {
-    try {
-        console.log('Got request: ', request.query)
-        const answeredQuestionTypes = await UserAnswer.find({ user_id: request.query.user_id })
-            .distinct('question_type');
-
-        console.log('found answered question types: ', answeredQuestionTypes);
-
-        const result = await Promise.all(answeredQuestionTypes.map( async (questionType) => {
-            const query = {
-                user_id: request.query.user_id,
-                question_type: questionType
-            };
-
-            const questionRatings = await UserAnswer.find(query)
-                .select('rating created')
-                .sort('-created')
-                .limit(11)
-                .exec();
-
-            console.log(`Found ${questionType} questions: `, questionRatings);
-
-            const ratingValues = questionRatings.map((r) => r.rating).reverse();
-            const ratingProfile = fetchRatingProfile(ratingValues);
-
-            console.log('Got rating profile: ', ratingProfile)
-
-            return {
-                operation: questionType,
-                currentRating: ratingValues[ratingValues.length - 1],
-                values: ratingValues,
-                labels: ratingValues.map((value, index) => index + 1),
-                pointRadius: 3, // eventually read from rating profile
-                fill: true, // this too
-                badgeColor: ratingProfile.color,
-                graphOptions: ratingProfile.graphOptions
-            }
-        }));
-
-        console.log('Got res: ', result)
-
-        return response.status(200).json(result);
-    } catch (error) {
-        console.log(error);
-        return response.status(400).json({
-            error: errorHandler.getErrorMessage(error)
-        });
-    }
-}
-
 module.exports = {
     saveUserAnswer,
     fetchUserAnswers,
-    fetchRatingHistory,
-    fetchUserStats
+    abortQuestion
 };

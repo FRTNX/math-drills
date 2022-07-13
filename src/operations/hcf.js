@@ -10,7 +10,8 @@ const DIFFICULTY_PROFILES = {
         baseAward: 6,
         timeAward: 1,
         timePenalty: 2,
-        displayType: 'inline'
+        displayType: 'inline',
+        tooltipIntro: `Common primes of olden times.`
     },
     1: {
         primes: [2, 3, 5, 7],
@@ -24,17 +25,6 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const checkOccurances = (array, element) => {
-    let counter = 0;
-    for (item of array.flat()) {
-        if (item == element) {
-            counter ++;
-        }
-    }
-
-    return counter;
-};
-
 const hcf = async (operation, difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
@@ -43,6 +33,8 @@ const hcf = async (operation, difficulty) => {
     const terms = [];
     const primes = [];
 
+    // at the end of this for loop, where, for example, terms = [8, 15, 50] the 
+    // primes array would then be [[2, 2, 2], [3, 5], [2, 5, 5]]
     for (let i = 0; i < numberOfTerms; i++) {
         const numberOfPrimes = random(...difficultyProfile.numberOfPrimes);
         const primeIndices = [];
@@ -59,11 +51,12 @@ const hcf = async (operation, difficulty) => {
         terms.push(product);
     }
 
-    console.log('Generated terms: ', terms)
-    console.log('And their primes: ', primes)
-
     const primeArrayDetails = {};
 
+    // get details about each array of primes in primes array. 
+    // where primes array = [[2, 2, 2], [3, 5], [2, 5, 5]]
+    // primeArrayDetails would then look like {{ 2: 3 }, { 3: 1, 5: 1 }, { 2: 1, 5: 2 }}
+    // after running the below for loop
     for (let i = 0; i < primes.length; i ++) {
         primeArrayDetails[i] = {};
         for (const prime of primes[i]) {
@@ -75,9 +68,22 @@ const hcf = async (operation, difficulty) => {
         }
     };
 
-    console.log('prime array details: ', primeArrayDetails)
-    const commonFactors = {}
+    const commonFactors = {};
 
+
+    const checkOccurances = (array, element) => {
+        let counter = 0;
+        for (item of array.flat()) {
+            if (item == element) {
+                counter ++;
+            }
+        }
+    
+        return counter;
+    };
+
+    // this checks for the occurance of a prime factor across
+    // all prime arrays in primes
     Object.keys(primeArrayDetails).map((arrayIndex) => {
         Object.keys(primeArrayDetails[arrayIndex]).map((prime) => {
             const currentOccurance = primeArrayDetails[arrayIndex][prime];
@@ -87,7 +93,6 @@ const hcf = async (operation, difficulty) => {
         })
     })
 
-    console.log('common factors: ', commonFactors);
     let product = 1; // default where no other common factors are found
 
     if (Object.keys(commonFactors).length > 0) {
@@ -131,7 +136,19 @@ const hcf = async (operation, difficulty) => {
     return question;
 };
 
+const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
+    const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
+
+    const message = `${difficultyProfile.tooltipIntro || ''} ` +
+        `Find the highest common factor of these numbers. ` +
+        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+
+    return { [difficulty]: message };
+});
+
 module.exports = {
     exec: hcf,
-    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level))
+    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
+    tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
 };
+

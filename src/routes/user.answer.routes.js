@@ -8,10 +8,7 @@ router.route('/api/v0/user/answer')
     .get(userAnswerCtrl.fetchUserAnswers)
     .post(userAnswerCtrl.saveUserAnswer);
 
-router.route('/api/v0/user/stats')
-    .get(userAnswerCtrl.fetchUserStats);
-
-router.route('/api/v0/user/rating')
-    .get(userAnswerCtrl.fetchRatingHistory);
+router.route('/api/v0/question/abort')
+    .post(userAnswerCtrl.abortQuestion);
 
 module.exports = router;

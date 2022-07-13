@@ -8,7 +8,8 @@ const DIFFICULTY_PROFILES = {
         timeLimit: 20000,
         baseAward: 5,
         timeAward: 2,
-        timePenalty: 1
+        timePenalty: 1,
+        tooltipIntro: 'Hasty addition.'
     },
     1: {
         range: [-50, 50],
@@ -16,7 +17,8 @@ const DIFFICULTY_PROFILES = {
         timeLimit: 20000,
         baseAward: 5,
         timeAward: 2,
-        timePenalty: 1
+        timePenalty: 1,
+        tooltipIntro: 'Like signs have so much positivity...'
     }
 };
 
@@ -92,7 +94,20 @@ const multiplication = async (operation, difficulty) => {
     return question;
 };
 
+const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
+    const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
+
+    const message = `${difficultyProfile.tooltipIntro || ''}` +
+    `Typically ${difficultyProfile.numberOfTerms} factors, ` +
+    `ranging from ${difficultyProfile.range[0]} to ${difficultyProfile.range[1]}. ` +
+    `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+
+
+    return { [difficulty]: message };
+});
+
 module.exports = {
     exec: multiplication,
-    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level))
-}
+    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
+    tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
+};

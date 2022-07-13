@@ -78,7 +78,19 @@ const primeFactorization = async (operation, difficulty) => {
     return question;
 };
 
+const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
+    const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
+
+    const message = `${difficultyProfile.tooltipIntro || ''} ` +
+        `Express this number as its prime factors. ` +
+        `Provide the factors separated by spaces. For example 8 = 2 2 2. ` +
+        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+
+    return { [difficulty]: message };
+});
+
 module.exports = {
     exec: primeFactorization,
-    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level))
+    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
+    tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
 };

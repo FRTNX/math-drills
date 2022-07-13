@@ -8,7 +8,8 @@ const DIFFICULTY_PROFILES = {
         timeLimit: 20000,
         baseAward: 5,
         timeAward: 2,
-        timePenalty: 1
+        timePenalty: 1,
+        tooltipIntro: 'Good old logs.'
     }
 };
 
@@ -54,7 +55,19 @@ const logarithm = async (operation, difficulty) => {
     return question;
 };
 
+const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
+    const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
+
+    const message = `${difficultyProfile.tooltipIntro || ''} ` +
+        `These logs are generated using some novel backend kung fu ` +
+        `to keep things constant. Report buggy questions to the developer. ` +
+        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+
+    return { [difficulty]: message };
+});
+
 module.exports = {
     exec: logarithm,
-    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level))
+    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
+    tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
 };

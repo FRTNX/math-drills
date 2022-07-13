@@ -10,7 +10,8 @@ const DIFFICULTY_PROFILES = {
         baseAward: 6,
         timeAward: 1,
         timePenalty: 2,
-        displayType: 'inline'
+        displayType: 'inline',
+        tooltipIntro: `The best of primes.`
     },
     1: {
         primes: [2, 3, 5, 7],
@@ -128,7 +129,18 @@ const lcm = async (operation, difficulty) => {
     return question;
 };
 
+const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
+    const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
+
+    const message = `${difficultyProfile.tooltipIntro || ''} ` +
+        `Find the lowest common multiple of these numbers. ` +
+        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+
+    return { [difficulty]: message };
+});
+
 module.exports = {
     exec: lcm,
-    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level))
+    levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
+    tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
 };

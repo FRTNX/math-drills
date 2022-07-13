@@ -6,7 +6,10 @@ const router = express.Router();
 
 router.route('/api/v0/users')
     .get(userCtrl.list)
-    .post(userCtrl.create); 
+    .post(userCtrl.create);
+
+router.route('/api/v0/user/randomized')
+    .put(userCtrl.sendRandomizedDataToUser);
 
 router.route('/count')
     .get(userCtrl.userCount);

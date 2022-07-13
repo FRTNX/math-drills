@@ -1,15 +1,96 @@
 const User = require('../models/user.model');
+const UserAnswer = require('../models/user.answer.model');
+
+const Question = require('../models/question.model');
+
 const extend = require('lodash/extend');
 const errorHandler = require('./../helpers/dbErrorHandler');
+
 const formidable = require('formidable');
 const fs = require('fs');
+
+const random = require('../helpers/random');
 const profileImage = fs.readFileSync('./src/assets/images/p3.jpg');
+
+// Durstenfeld shuffle, todo: change to Fisher-Yates; eventually move to helpers
+const shuffle = (array) => {
+    for (var i = array.length - 1; i > 0; i --) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    };
+
+    return array;
+};
+
+const generateRandomizedData = async (userId) => {
+    const questionTypes = await Question.find({}).distinct('question_type');
+    console.log('Got distinct question types: ', questionTypes);
+
+    await Promise.all(questionTypes.map((questionType) => {
+        const ranges = [11, 15, 20];
+        const numberOfQuestions = ranges[random(0, ranges.length - 1)];
+
+        const randomizedAnswers = [];
+
+        const incorrectAnswers = random(3, 4);
+        const correctAnswers = numberOfQuestions - incorrectAnswers;
+
+        for (let i = 0; i < correctAnswers; i++) {
+            randomizedAnswers.push({ isCorrect: true });
+        }
+
+        for (let i = 0; i < incorrectAnswers; i++) {
+            randomizedAnswers.push({ isCorrect: false });
+        }
+
+        let currentRating = 0;
+
+        // console.log('shuffled: ', shuffle(randomizedAnswers))
+
+        shuffle(randomizedAnswers).map(async(randomizedAnswer) => {
+            const question = await Question.findOne({ question_type: questionType, difficulty: 0 });
+            // console.log('Got question: ', question);
+
+            const timeTaken = random(1000, question.time_limit + 1000);
+
+            if (randomizedAnswer.isCorrect) {
+                const questionAward = timeTaken <= question.time_limit
+                    ? question.base_award
+                    : question.base_award - question.time_penalty;
+                currentRating += questionAward;
+            } else {
+                currentRating -= question.base_award;
+            }
+
+            console.log('current rating: ', currentRating)
+
+            const answer = UserAnswer({
+                user_id: userId,
+                question_id: question._id,
+                question_type: question.question_type,
+                question_difficulty: question.question_difficulty,
+                user_answer: 'randomized',
+                is_correct: randomizedAnswer.isCorrect,
+                time_taken: timeTaken,
+                rating: currentRating
+            });
+
+
+            await answer.save();
+        });
+    }))
+};
 
 const create = async (request, response) => {
     console.log('Creating user', request.body)
     try {
         const user = new User(request.body);
         await user.save();
+
+        await generateRandomizedData(user._id);
+
         return response.status(200).json({
             message: "Successfully signed up!"
         });
@@ -19,7 +100,38 @@ const create = async (request, response) => {
             error: errorHandler.getErrorMessage(error)
         });
     }
-}
+};
+
+const sendRandomizedDataToUser = async (request, response) => {
+    try {
+        const userId = request.query.user_id;
+
+        const userExists = await User.exists({ _id: userId });
+
+        if (!userExists) {
+            return response.status(404).json({ error: 'user not found' });
+        }
+
+        const alreadyRandomized = await UserAnswer.exists({ user_id: userId, user_answer: 'randomized' });
+
+        if (alreadyRandomized) {
+            throw new Error('This user has already recieved randomized data');
+        }
+        
+        // await UserAnswer.deleteMany({ user_id: userId });
+
+        await generateRandomizedData(userId);
+
+        return response.status(200).json({
+            message: 'SUCCESS'
+        });
+    } catch (error) {
+        console.log(error)
+        return response.status(400).json({
+            error: errorHandler.getErrorMessage(error)
+        });
+    }
+};
 
 const userByID = async (request, response, next, id) => {
     try {
@@ -222,5 +334,6 @@ module.exports = {
     removeFollowing,
     removeFollower,
     findPeople,
-    userCount
+    userCount,
+    sendRandomizedDataToUser
 };

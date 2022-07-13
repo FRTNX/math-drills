@@ -10,6 +10,7 @@ const userRoutes = require('./routes/user.routes');
 const authRoutes = require('./routes/auth.routes');
 const opRoutes = require('./routes/operations.routes');
 const userAnswerRoutes = require('./routes/user.answer.routes');
+const userStatsRoutes = require('./routes/user.stats.routes');
 
 
 const app = express();
@@ -32,6 +33,7 @@ app.use(helmet())
 app.use(cors())
 
 app.use('/', userAnswerRoutes);
+app.use('/', userStatsRoutes);
 app.use('/', userRoutes);
 app.use('/', authRoutes)
 app.use('/', opRoutes)
