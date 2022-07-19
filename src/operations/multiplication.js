@@ -6,7 +6,7 @@ const DIFFICULTY_PROFILES = {
         range: [3, 30],
         numberOfTerms: 2,
         timeLimit: 20000,
-        baseAward: 5,
+        baseAward: [4, 6],
         timeAward: 2,
         timePenalty: 1,
         tooltipIntro: 'Hasty addition.'
@@ -15,7 +15,7 @@ const DIFFICULTY_PROFILES = {
         range: [-50, 50],
         numberOfTerms: 2,
         timeLimit: 20000,
-        baseAward: 5,
+        baseAward: [5, 8],
         timeAward: 2,
         timePenalty: 1,
         tooltipIntro: 'Like signs have so much positivity...'
@@ -68,7 +68,7 @@ const multiplication = async (operation, difficulty) => {
         question_latex: questionLatex,
         correct_answer: product,
         time_limit: difficultyProfile.timeLimit,
-        base_award: difficultyProfile.baseAward,
+        base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,
         time_penalty: difficultyProfile.timePenalty
     });

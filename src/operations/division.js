@@ -6,7 +6,7 @@ const DIFFICULTY_PROFILES = {
         quotientRange: [2, 20],
         divisorRange: [10, 30],
         timeLimit: 20000, // millis
-        baseAward: 5,
+        baseAward: [4, 6],
         timeAward: 2,
         timePenalty: 1,
     },
@@ -14,7 +14,7 @@ const DIFFICULTY_PROFILES = {
         quotientRange: [-2, 20],
         divisorRange: [-10, 30],
         timeLimit: 20000, // todo: adjust values accordingly
-        baseAward: 5,
+        baseAward: [5, 8],
         timeAward: 2,
         timePenalty: 1
     },
@@ -22,7 +22,7 @@ const DIFFICULTY_PROFILES = {
         quotientRange: [-20, 50],
         divisorRange: [-10, 50],
         timeLimit: 20000,
-        baseAward: 5,
+        baseAward: [5, 8],
         timeAward: 2,
         timePenalty: 1
     },
@@ -30,7 +30,7 @@ const DIFFICULTY_PROFILES = {
         quotientRange: [-50, 50],
         divisorRange: [-50, 50],
         timeLimit: 20000,
-        baseAward: 5,
+        baseAward: [5, 8],
         timeAward: 2,
         timePenalty: 1
     }
@@ -65,7 +65,7 @@ const division = async (operation, difficulty) => {
         question_latex: questionLatex,
         correct_answer: quotient,
         time_limit: difficultyProfile.timeLimit,
-        base_award: difficultyProfile.baseAward,
+        base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,
         time_penalty: difficultyProfile.timePenalty
     });

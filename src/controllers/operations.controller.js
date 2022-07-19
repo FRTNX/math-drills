@@ -12,12 +12,17 @@ const division = require('../operations/division');
 const logarithm = require('../operations/logarithm');
 const primeFactorization = require('../operations/primeFactorization');
 
-const summation = require('../operations/summation');
 const lcm = require('../operations/lcm');
 const hcf = require('../operations/hcf');
 
 const fractions = require('../operations/fractions');
 const percentage = require('../operations/percentage');
+
+const exponents = require('../operations/exponents');
+const radicals = require('../operations/radicals');
+
+const summation = require('../operations/summation');
+
 
 const removeSecrets = (question) => {
     question.correct_answer = undefined;
@@ -59,17 +64,19 @@ const checkForExistingQuestion = async (operation, difficulty) => {
 };
 
 const OPERATIONS_MAP = {
-    logarithms: logarithm,
     addition: addition,
     subtraction: subtraction,
     multiplication: multiplication,
     division: division,
-    prime_factorization: primeFactorization,
+    exponents: exponents,
+    radicals: radicals,
     summation: summation,
     lcm: lcm,
     hcf: hcf,
     fractions: fractions,
-    percentage: percentage
+    percentage: percentage,
+    prime_factorization: primeFactorization,
+    logarithms: logarithm
 };
 
 // if there's no question in the db matching requested criterea
@@ -78,8 +85,6 @@ const OPERATIONS_MAP = {
 // to the user
 const fetchQuestion = async (request, response) => {
     try {
-        // await Question.deleteMany({}) // remove when ready
-
         const operation = request.query.op;
         const difficulty = request.query.difficulty;
 
@@ -90,8 +95,8 @@ const fetchQuestion = async (request, response) => {
         // if (question) {
         //     return response.status(200).json(removeSecrets(question));
         // }
-``
-        question = await OPERATIONS_MAP[operation].exec(operation, difficulty);    
+
+        let question = await OPERATIONS_MAP[operation].exec(operation, difficulty);
 
         question = removeSecrets(question);
 
@@ -114,9 +119,10 @@ const listOperations = (request, response) => {
 
 const fetchTooltipMessage = async (request, response) => {
     try {
-        const [operation, difficulty] = [request.query.op, request.query.difficulty];
-        // const operation = request.query.op;
-        // const difficulty = request.query.difficulty;
+        const [operation, difficulty] = [
+            request.query.op,
+            request.query.difficulty
+        ];
 
         const message = OPERATIONS_MAP[operation].tooltips[difficulty];
 

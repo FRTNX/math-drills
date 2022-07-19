@@ -6,7 +6,7 @@ const DIFFICULTY_PROFILES = {
         primes: [2, 3, 5, 7],
         numberOfPrimes: [2, 5],
         timeLimit: 60000,
-        baseAward: 6,
+        baseAward: [4, 6],
         timeAward: 1,
         timePenalty: 2
     },
@@ -14,7 +14,7 @@ const DIFFICULTY_PROFILES = {
         primes: [2, 3, 5, 7, 11],
         numberOfPrimes: [2, 5],
         timeLimit: 60000,
-        baseAward: 6,
+        baseAward: [5, 8],
         timeAward: 1,
         timePenalty: 2
     },
@@ -22,7 +22,7 @@ const DIFFICULTY_PROFILES = {
         primes: [2, 3, 5, 7, 11, 13],
         numberOfPrimes: [2, 6],
         timeLimit: 60000,
-        baseAward: 6,
+        baseAward: [5, 8],
         timeAward: 1,
         timePenalty: 2
     }
@@ -52,7 +52,7 @@ const primeFactorization = async (operation, difficulty) => {
         question_latex: questionLatex,
         correct_answer: JSON.stringify(selectedPrimes.sort()),
         time_limit: difficultyProfile.timeLimit,
-        base_award: difficultyProfile.baseAward,
+        base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,
         time_penalty: difficultyProfile.timePenalty
     });

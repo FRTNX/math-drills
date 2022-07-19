@@ -6,7 +6,7 @@ const DIFFICULTY_PROFILES = {
         logBaseRange: [1, 6],
         exponentRange: [0, 6],
         timeLimit: 20000,
-        baseAward: 5,
+        baseAward: [5, 8],
         timeAward: 2,
         timePenalty: 1,
         tooltipIntro: 'Good old logs.'
@@ -29,7 +29,7 @@ const logarithm = async (operation, difficulty) => {
         question_latex: questionLatex,
         correct_answer: `${exponent}`,
         time_limit: difficultyProfile.timeLimit,
-        base_award: difficultyProfile.baseAward,
+        base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,
         time_penalty: difficultyProfile.timePenalty
     });

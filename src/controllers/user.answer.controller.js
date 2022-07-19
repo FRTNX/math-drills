@@ -11,7 +11,6 @@ const saveUserAnswer = async (request, response) => {
         const question = await Question.findOne({ _id: request.body.question_id });
 
         const answer = evaluations.evaluateAnswer(question, request.body);
-        // await UserAnswer.deleteMany({});
 
         const params = {
             user_id: request.body.user_id,

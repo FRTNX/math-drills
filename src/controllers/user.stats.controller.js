@@ -1,6 +1,9 @@
 const User = require('../models/user.model');
 const UserAnswer = require('../models/user.answer.model');
 const AbortedQuestion = require('../models/aborted.question.model');
+
+const { populateRandomizedData } = require('../controllers/user.controller');
+
 const errorHandler = require('./../helpers/dbErrorHandler');
 
 const fetchRatingProfile = (userRatings, hasUserAnswers) => {
@@ -26,6 +29,10 @@ const fetchRatingProfile = (userRatings, hasUserAnswers) => {
 
 const fetchRatingHistory = async (request, response) => {
     try {
+        if (!request.query.user_id || !request.query.question_type) {
+            throw new Error('Invalid rating request');
+        }
+        
         let query = {
             user_id: request.query.user_id,
             question_type: request.query.question_type
@@ -35,21 +42,16 @@ const fetchRatingHistory = async (request, response) => {
             ? request.query.limit
             : 10
 
-        const userAnswers = await UserAnswer.find(query)
+        let userAnswers = await UserAnswer.find(query)
             .select('rating created')
             .sort('-created')
             .limit(limit)
             .exec();
 
-        console.log('Got result: ', userAnswers.map((r) => r.rating));
-
         const hasUserAnswers = await UserAnswer.exists({ ...query, user_answer: {'$ne': 'randomized' }});
-        console.log('has user submitted answers: ', hasUserAnswers)
 
         const userRating = userAnswers.map((r) => r.rating);
         const ratingProfile = fetchRatingProfile(userRating, hasUserAnswers);
-
-        console.log('Got rating profile: ', ratingProfile)
 
         const result = {
             ratings: userRating.reverse(),

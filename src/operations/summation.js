@@ -6,7 +6,7 @@ const DIFFICULTY_PROFILES = {
         lowerLimitRange: [1, 10],
         sequenceRange: [4, 6],
         timeLimit: 30000,
-        baseAward: 7,
+        baseAward: [5, 8],
         timeAward: 1,
         timePenalty: 3,
         tooltipIntro: 'This op is so you dont think Math Drills is soft. ' +
@@ -59,7 +59,7 @@ const summation = async (operation, difficulty) => {
         question_latex: questionLatex,
         correct_answer: sum,
         time_limit: difficultyProfile.timeLimit,
-        base_award: difficultyProfile.baseAward,
+        base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,
         time_penalty: difficultyProfile.timePenalty
     });

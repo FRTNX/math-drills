@@ -6,7 +6,7 @@ const DIFFICULTY_PROFILES = {
         range: [3, 60],
         numberOfTerms: 2,
         timeLimit: 7000, // millis,
-        baseAward: 5,
+        baseAward: [4, 6],
         timeAward: 2,
         timePenalty: 2,
         tooltipIntro: "Easy peasy.\n"
@@ -15,7 +15,7 @@ const DIFFICULTY_PROFILES = {
         range: [-50, 100],
         numberOfTerms: 2,
         timeLimit: 10000,
-        baseAward: 5,
+        baseAward: [5, 8],
         timeAward: 2,
         timePenalty: 2,
         tooltipIntro: "Sign rules.\n"
@@ -46,17 +46,14 @@ const addition = async (operation, difficulty) => {
         question_latex: questionLatex,
         correct_answer: sum,
         time_limit: difficultyProfile.timeLimit,
-        base_award: difficultyProfile.baseAward,
+        base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,
         time_penalty: difficultyProfile.timePenalty
     });
 
     // if the question just generated already exists return the persisted question.
     // this is to avoid running recursion until a new question is found as each
-    // set of parameters has a finite number of possible quesions. Even if 
-    // parameters are tweaked to produce new questions, these parameters would 
-    // have to be infinitely tweakable to be a scalable solution, at which point
-    // it may be simpler to just adjust operation difficulty
+    // set of parameters has a finite number of possible questions
     const existingQuestion = await Question.findOne({
         question_type: operation,
         question_difficulty: difficulty,

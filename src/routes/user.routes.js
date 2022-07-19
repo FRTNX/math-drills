@@ -9,7 +9,7 @@ router.route('/api/v0/users')
     .post(userCtrl.create);
 
 router.route('/api/v0/user/randomized')
-    .put(userCtrl.sendRandomizedDataToUser);
+    .put(userCtrl.populateOps);
 
 router.route('/count')
     .get(userCtrl.userCount);

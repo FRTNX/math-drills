@@ -8,7 +8,7 @@ const DIFFICULTY_PROFILES = {
         denominatorRange: [1, 50],
         ops: ['addition', 'subtraction'],
         timeLimit: 60000,
-        baseAward: 6,
+        baseAward: [4, 6],
         timeAward: 1,
         timePenalty: 2,
         tooltipIntro: 'Beware of improper fractions.\n'
@@ -19,7 +19,7 @@ const DIFFICULTY_PROFILES = {
         denominatorRange: [1, 80],
         ops: ['addition', 'subtraction', 'multiplication', 'division'],
         timeLimit: 60000,
-        baseAward: 6,
+        baseAward: [5, 8],
         timeAward: 1,
         timePenalty: 2,
         tooltipIntro: 'Beware of really improper fractions.\n'
@@ -41,17 +41,12 @@ const fractions = async (operation, difficulty) => {
         terms.push([numerator, denominator]);
     }
 
-    console.log('fraction arrays: ', terms)
-
-    const op = difficultyProfile.ops[random(0, difficultyProfile.ops.length)]
-    console.log('selected op: ', op)
+    const op = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
 
     const formattedFractions = terms.map((fraction) => {
         const [numerator, denominator] = fraction;
         return `\\frac{${numerator}}{${denominator}}`;
     });
-
-    console.log('formatted fractions: ', formattedFractions);
 
     const decimalFractions = terms.map((fraction) => fraction[0] / fraction[1]);
     console.log('decimal fractions: ', decimalFractions)
@@ -104,7 +99,7 @@ const fractions = async (operation, difficulty) => {
         question_latex: questionLatex,
         correct_answer: Number(correctAnswer).toFixed(2),
         time_limit: difficultyProfile.timeLimit,
-        base_award: difficultyProfile.baseAward,
+        base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,
         time_penalty: difficultyProfile.timePenalty
     });

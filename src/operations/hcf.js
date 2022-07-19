@@ -7,7 +7,7 @@ const DIFFICULTY_PROFILES = {
         numberOfTerms: [2, 4],
         numberOfPrimes: [2, 4],
         timeLimit: 60000,
-        baseAward: 6,
+        baseAward: [4, 6],
         timeAward: 1,
         timePenalty: 2,
         displayType: 'inline',
@@ -18,7 +18,7 @@ const DIFFICULTY_PROFILES = {
         numberOfTerms: [2, 4],
         numberOfPrimes: [2, 5],
         timeLimit: 60000,
-        baseAward: 6,
+        baseAward: [5, 8],
         timeAward: 1,
         timePenalty: 2,
         displayType: 'inline'
@@ -109,7 +109,7 @@ const hcf = async (operation, difficulty) => {
         question_latex: questionLatex,
         correct_answer: product,
         time_limit: difficultyProfile.timeLimit,
-        base_award: difficultyProfile.baseAward,
+        base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,
         time_penalty: difficultyProfile.timePenalty,
         display_type: difficultyProfile.displayType

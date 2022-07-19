@@ -7,7 +7,7 @@ const DIFFICULTY_PROFILES = {
         baseRange: [1, 400],
         percentageRange: [1, 50],
         timeLimit: 20000,
-        baseAward: 5,
+        baseAward: [5, 8],
         timeAward: 2,
         timePenalty: 1,
         displayType: 'plain'
@@ -57,7 +57,7 @@ const percentage = async (operation, difficulty) => {
         question_latex: questionLatex,
         correct_answer: Number(correctAnswer).toFixed(2),
         time_limit: difficultyProfile.timeLimit,
-        base_award: difficultyProfile.baseAward,
+        base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,
         time_penalty: difficultyProfile.timePenalty,
         display_type: difficultyProfile.displayType
