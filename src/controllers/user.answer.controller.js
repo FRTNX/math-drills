@@ -78,9 +78,7 @@ const abortQuestion = async (request, response) => {
         const userId = request.query.user_id;
         const questionId = request.query.question_id;
 
-        const question = await Question.findOne({ _id: questionId });
-
-        // await AbortedQuestion.deleteMany({})
+        const question = await Question.findOne({ _id: request.query.question_id });
 
         if (!question) {
             throw new Error('Question not found');
@@ -88,19 +86,17 @@ const abortQuestion = async (request, response) => {
 
         try {
             const abortedQuestion = new AbortedQuestion({
-                user_id: userId,
-                question_id: questionId,
+                user_id: request.query.user_id,
+                question_id: question._id,
                 question_type: question.question_type
             });
 
-            console.log('Aborting question: ', abortedQuestion)
             await abortedQuestion.save();
         } catch (error) {
             console.log(error);
         }
 
-        const abortedQuestions = await AbortedQuestion.find({ user_id: userId })
-        console.log('Found aborted questions for user: ', abortedQuestions)
+        const abortedQuestions = await AbortedQuestion.find({ user_id: request.query.user_id })
 
         return response.status(200).json({ result: 'SUCCESS' });
     } catch (error) {
@@ -111,7 +107,6 @@ const abortQuestion = async (request, response) => {
     }
 };
 
-// todo: reuse this where needed
 const fetchUserAnswers = async (request, response) => {
     try {
         let query = { user_id: request.query.user_id };

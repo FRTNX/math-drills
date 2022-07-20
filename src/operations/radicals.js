@@ -37,19 +37,7 @@ const DIFFICULTY_PROFILES = {
         timeAward: 1,
         timePenalty: 2,
         tooltipIntro: 'Squares, cubes, free for all.\n'
-    },
-    // 2: {
-    //     numberOfTerms: [1, 2],
-    //     rootRange: [1, 15],
-    //     indices: [2, 3],
-    //     ops: ['addition', 'subtraction', 'multiplication', 'division'],
-    //     obfuscation: ['none', 'summation'],
-    //     timeLimit: 60000,
-    //     baseAward: [4, 6],
-    //     timeAward: 1,
-    //     timePenalty: 2,
-    //     tooltipIntro: ''
-    // }
+    }
 };
 
 const radicals = async (operation, difficulty) => {
@@ -131,7 +119,7 @@ const radicals = async (operation, difficulty) => {
         question_type: operation,
         question_difficulty: Number(difficulty),
         question_latex: questionLatex,
-        correct_answer: correctAnswer,
+        correct_answer: Number(correctAnswer).toFixed(2),
         time_limit: difficultyProfile.timeLimit,
         base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,

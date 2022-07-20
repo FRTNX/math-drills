@@ -5,7 +5,7 @@ const DIFFICULTY_PROFILES = {
     0: {
         numberOfTerms: [1, 2],
         factorRange: [1, 30],
-        exponents: [1, 2], // the first exponent must always be 1
+        exponents: [1, 2], // squares; the first exponent must always be 1, for all levels
         ops: ['addition', 'subtraction', 'multiplication', 'division'],
         obfuscation: ['none'],
         timeLimit: 7000,
@@ -29,27 +29,43 @@ const DIFFICULTY_PROFILES = {
     2: {
         numberOfTerms: [1, 2],
         factorRange: [1, 30],
-        exponents: [1, 2, 3, 10], // all together now
+        exponents: [1, 2, 3, 0, -1, -2, -3], // + negatives and 0
         ops: ['addition', 'subtraction', 'multiplication', 'division'],
-        obfuscation: ['none'], // add 'split' where values like 12 ** 3 become (4 * 3) ** 3 
+        obfuscation: ['none'],
         timeLimit: 15000,
         baseAward: [5, 8],
         timeAward: 1,
         timePenalty: 2,
-        tooltipIntro: 'Sqaures, cubes, and powers of 10.\n'
+        tooltipIntro: 'Sqaures, cubes, negatives, and zero as an exponent. Such fun.\n'
     },
-    // 3: {
-    //     numberOfTerms: [1, 2],
-    //     factorRange: [1, 30],
-    //     exponents: [1, 2, 3, 10], // all together now
-    //     ops: ['addition', 'subtraction', 'multiplication', 'division'],
-    //     obfuscation: ['none', 'radical'],
-    //     timeLimit: 60000,
-    //     baseAward: [5, 8],
-    //     timeAward: 1,
-    //     timePenalty: 2,
-    //     tooltipIntro: ''
-    // }
+    3: {
+        numberOfTerms: [1, 2],
+        factorRange: [1, 30],
+        exponents: [1, 'fraction'],
+        ops: ['addition', 'subtraction', 'multiplication', 'division'],
+        obfuscation: ['none'],
+        indexRange: [-3, -2, -1, 1, 2, 3, 4], // required where 'fraction' is an exponent
+        rootRange: [-3, -2, -1, 1, 2, 3, 4], // required where 'fraction' is an exponent
+        timeLimit: 15000,
+        baseAward: [5, 8],
+        timeAward: 1,
+        timePenalty: 2,
+        tooltipIntro: 'Fractional exponents. As above, so not below. Power over roots. Roots before power.\n'
+    },
+    4: {
+        numberOfTerms: [1, 2],
+        factorRange: [1, 30],
+        exponents: [1, 2, 3, 0, -1, -2, -3, 'fraction'], // all together now
+        ops: ['addition', 'subtraction', 'multiplication', 'division'],
+        obfuscation: ['none'],
+        indexRange: [-3, -2, -1, 1, 2, 3, 4],
+        rootRange: [-3, -2, -1, 1, 2, 3, 4],
+        timeLimit: 15000,
+        baseAward: [5, 8],
+        timeAward: 1,
+        timePenalty: 2,
+        tooltipIntro: 'The whole enchelada.\n'
+    }
 };
 
 const exponents = async (operation, difficulty) => {
@@ -64,28 +80,46 @@ const exponents = async (operation, difficulty) => {
         random(0, difficultyProfile.numberOfTerms.length)
     ];
 
-    for (let i = 0; i < numberOfTerms; i ++) {
+    for (let i = 0; i < numberOfTerms; i++) {
         const base = random(...difficultyProfile.factorRange);
 
         let exponent = numberOfTerms > 1
             ? difficultyProfile.exponents[random(0, difficultyProfile.exponents.length)]
-            : difficultyProfile.exponents[1]; // this ensures solo exponents always have a power greater than 1
-        
+            : difficultyProfile.exponents[random(1, difficultyProfile.exponents.length)]; // ensures solo exponents always have a power greater than 1
+
         if (exponent !== 1) {
             hasExponent = true;
         }
-    
+
         // if this is the last term and no expnent has been used
         // so far, force the use of an exponent greater than one within difficulty range
         if (i === numberOfTerms - 1 && !hasExponent) {
-            exponent = difficultyProfile.exponents[1];
+            exponent = difficultyProfile.exponents[random(1, difficultyProfile.exponents.length)];
+        }
+
+        // holds the obfuscated value
+        let exponentValue;
+
+        if (exponent === 'fraction') {
+            const numerator = difficultyProfile.indexRange[
+                random(0, difficultyProfile.indexRange.length)
+            ];
+
+            const denominator = difficultyProfile.rootRange[
+                random(0, difficultyProfile.rootRange.length)
+            ];
+
+            exponent = `\\frac{${numerator}}{${denominator}}`;
+            exponentValue = numerator / denominator;
         }
 
         exponent !== 1
             ? formattedTerms.push(`${base}^{${exponent}}`)
             : formattedTerms.push(`${base}`);
 
-        terms.push(base ** exponent);
+        exponentValue
+            ? terms.push(base ** exponentValue)
+            : terms.push(base ** exponent);
     }
 
     console.log('terms: ', terms)
@@ -99,6 +133,7 @@ const exponents = async (operation, difficulty) => {
         correctAnswer = terms[0];
     }
 
+    // shared code; todo: move to helpers
     if (terms.length > 1) {
         const op = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
 
@@ -117,36 +152,46 @@ const exponents = async (operation, difficulty) => {
 
             let styles = ['default', 'dot', 'brackets'];
             const style = styles[random(0, styles.length)];
-    
+
             if (style == 'default') {
                 questionLatex = formattedTerms.join('\\times');
             }
-        
+
             if (style == 'dot') {
                 questionLatex = formattedTerms.join('\\cdot');
             }
-        
+
             if (style == 'brackets') {
                 factors = formattedTerms.map((term, index) => index === 0
                     ? `${term}`
-                    : `\\left(${term}\\right)` );
-            
+                    : `\\left(${term}\\right)`);
+
                 questionLatex = factors.join('');
             }
         }
 
         if (op === 'division') {
-            questionLatex = formattedTerms.join('\\div');
+            let styles = ['default', 'fraction'];
+            const style = styles[random(0, styles.length)];
+
+            if (style === 'default') {
+                questionLatex = formattedTerms.join('\\div');
+            }
+
+            if (style === 'fraction') {
+                questionLatex = `\\frac{${formattedTerms[0]}}{${formattedTerms[1]}}`;
+            }
+
             correctAnswer = terms.slice(1).reduce((quotient, value) => quotient / value, terms[0]);
         }
     }
- 
+
     const question = new Question({
         author: 'DrillBot',
         question_type: operation,
         question_difficulty: Number(difficulty),
         question_latex: questionLatex,
-        correct_answer: correctAnswer,
+        correct_answer: Number(correctAnswer).toFixed(2),
         time_limit: difficultyProfile.timeLimit,
         base_award: random(...difficultyProfile.baseAward),
         time_award: difficultyProfile.timeAward,
@@ -162,7 +207,7 @@ const exponents = async (operation, difficulty) => {
     if (existingQuestion) {
         return existingQuestion;
     }
-    
+
     try {
         await question.save();
     } catch (error) {

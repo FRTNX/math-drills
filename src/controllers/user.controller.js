@@ -1,3 +1,5 @@
+const config = require('../../config/config');
+
 const User = require('../models/user.model');
 const UserAnswer = require('../models/user.answer.model');
 
@@ -33,7 +35,6 @@ const populateRandomizedData = async (userId, operation) => {
         questionTypes = await Question.find({}).distinct('question_type');
     }
 
-    console.log('Got question types or randomization: ', questionTypes);
 
     const result = await Promise.all(questionTypes.map(async (questionType) => {
         const alreadyRandomized = await UserAnswer.exists({
@@ -43,7 +44,8 @@ const populateRandomizedData = async (userId, operation) => {
         });
 
         if (alreadyRandomized) {
-            console.log(`Skipped ${questionType} for user ${userId}, randomized data already populated for this op`)
+            console.log(`Skipped ${questionType} for user ${userId}, ` +
+                `randomized data already populated for this op`);
             return;
         }
 
@@ -100,16 +102,13 @@ const populateRandomizedData = async (userId, operation) => {
 };
 
 const create = async (request, response) => {
-    console.log('Creating user', request.body)
     try {
         const user = new User(request.body);
         await user.save();
 
         await populateRandomizedData(user._id);
 
-        return response.status(200).json({
-            message: "Successfully signed up!"
-        });
+        return response.status(200).json({ message: 'SUCCESS' });
     } catch (error) {
         console.log(error)
         return response.status(400).json({
