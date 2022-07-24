@@ -96,7 +96,7 @@ const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
 
     const message = `${difficultyProfile.tooltipIntro || ''}` +
         `Where solo fractions appear simply perform the indicated division. ` +
-        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+        `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };
 });

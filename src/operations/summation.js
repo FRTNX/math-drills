@@ -89,7 +89,7 @@ const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
     const message = `${difficultyProfile.tooltipIntro || ''} ` +
-        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+        `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };
 });

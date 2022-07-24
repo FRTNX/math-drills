@@ -141,7 +141,7 @@ const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
 
     const message = `${difficultyProfile.tooltipIntro || ''} ` +
         `Find the highest common factor of these numbers. ` +
-        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+        `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };
 });

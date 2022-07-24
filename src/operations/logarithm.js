@@ -60,8 +60,8 @@ const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
 
     const message = `${difficultyProfile.tooltipIntro || ''} ` +
         `These logs are generated using some novel backend kung fu ` +
-        `to keep things constant. Report buggy questions to the developer. ` +
-        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+        `Report buggy questions to the developer (hover mouse over copyright for contact detail)` +
+        `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };
 });

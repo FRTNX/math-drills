@@ -84,7 +84,7 @@ const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const message = `${difficultyProfile.tooltipIntro || ''} ` +
         `Express this number as its prime factors. ` +
         `Provide the factors separated by spaces. For example 8 = 2 2 2. ` +
-        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+        `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };
 });

@@ -1,4 +1,4 @@
-const config = require('../../config/config');
+const { config } = require('../../config/config');
 
 const User = require('../models/user.model');
 const UserAnswer = require('../models/user.answer.model');
@@ -98,7 +98,7 @@ const populateRandomizedData = async (userId, operation) => {
         return { message: `Populated randomized data for op: ${questionType}` }
     }));
 
-    return { [userId]: result.filter((r) => r !== null) };
+    return { [userId]: result.filter((r) => !r === false) };
 };
 
 const create = async (request, response) => {
@@ -142,7 +142,7 @@ const populateOps = async (request, response) => {
             });
         };
 
-        console.log('populating ops for users: ', userIds);
+        console.log(`populating ops for ${userIds.length} users`);
 
         const result = await Promise.all(userIds.map((userId) => populateRandomizedData(userId)));
         console.log('result of randomized population: ', result)
@@ -181,22 +181,6 @@ const read = (request, response) => {
     request.profile.hashed_password = undefined;
     request.profile.salt = undefined;
     return response.json(request.profile);
-}
-
-const list = async (request, response) => {
-    try {
-        const query = {};
-        if (request.query.username) {
-            query.name = { '$regex': request.query.username, '$options': 'i' }
-        }
-
-        let users = await User.find(query).select('name email updated created');
-        response.json(users);
-    } catch (error) {
-        return response.status(400).json({
-            error: errorHandler.getErrorMessage(error)
-        });
-    }
 };
 
 const update = (request, response) => {
@@ -230,23 +214,6 @@ const update = (request, response) => {
     });
 };
 
-const remove = async (request, response) => {
-    try {
-        let user = request.profile;
-
-        let deletedUser = await user.remove();
-
-        deletedUser.hashed_password = undefined;
-        deletedUser.salt = undefined;
-
-        response.json(deletedUser);
-    } catch (error) {
-        return response.status(400).json({
-            error: errorHandler.getErrorMessage(error)
-        });
-    }
-};
-
 const photo = (request, response, next) => {
     if (request.profile.photo.data) {
         response.set("Content-Type", request.profile.photo.contentType);
@@ -259,78 +226,9 @@ const defaultPhoto = (request, response) => {
     return response.sendFile(process.cwd() + profileImage);
 }
 
-const addFollowing = async (request, response, next) => {
-    try {
-        await User.findByIdAndUpdate(request.body.userId, { $push: { following: request.body.followId } });
-        next();
-    } catch (error) {
-        return response.status(400).json({
-            error: errorHandler.getErrorMessage(error)
-        });
-    }
-};
-
-const addFollower = async (request, response) => {
-    try {
-        let result = await User.findByIdAndUpdate(request.body.followId, { $push: { followers: request.body.userId } }, { new: true })
-            .populate('following', '_id name')
-            .populate('followers', '_id name')
-            .exec();
-        result.hashed_password = undefined;
-        result.salt = undefined;
-        response.json(result);
-    } catch (error) {
-        return response.status(400).json({
-            error: errorHandler.getErrorMessage(error)
-        });
-    }
-};
-
-const removeFollowing = async (request, response, next) => {
-    try {
-        await User.findByIdAndUpdate(request.body.userId, { $pull: { following: request.body.unfollowId } });
-        next();
-    } catch (error) {
-        return response.status(400).json({
-            error: errorHandler.getErrorMessage(error)
-        });
-    }
-};
-
-const removeFollower = async (request, response) => {
-    try {
-        let result = await User.findByIdAndUpdate(request.body.unfollowId,
-            { $pull: { followers: request.body.userId } },
-            { new: true })
-            .populate('following', '_id name')
-            .populate('followers', '_id name')
-            .exec();
-        result.hashed_password = undefined;
-        result.salt = undefined;
-        response.json(result);
-    } catch (error) {
-        return response.status(400).json({
-            error: errorHandler.getErrorMessage(error)
-        });
-    }
-};
-
-const findPeople = async (request, response) => {
-    let following = request.profile.following;
-    following.push(request.profile._id);
-    try {
-        let users = await User.find({ _id: { $nin: following } }).select('name');
-        response.json(users);
-    } catch (error) {
-        return response.status(400).json({
-            error: errorHandler.getErrorMessage(error)
-        });
-    }
-};
-
 const userCount = async (request, response) => {
     try {
-        if (request.query.key !== config.ADMIN_KEY) {
+        if (request.query.key !== config.adminKey) {
             throw new Error('Oh no you dont')
         }
 
@@ -347,16 +245,9 @@ module.exports = {
     create,
     userByID,
     read,
-    list,
-    remove,
     update,
     photo,
     defaultPhoto,
-    addFollowing,
-    addFollower,
-    removeFollowing,
-    removeFollower,
-    findPeople,
     userCount,
     populateOps
 };

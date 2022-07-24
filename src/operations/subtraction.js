@@ -75,7 +75,7 @@ const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
 
     const message = `${difficultyProfile.tooltipIntro || ''} ` +
         `There's no such thing as subtraction... ` + 
-        `Bonus award time limit ${difficultyProfile.timeLimit / 1000} seconds.`
+        `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };
 });

@@ -16,6 +16,7 @@ const lcm = require('../operations/lcm');
 const hcf = require('../operations/hcf');
 
 const fractions = require('../operations/fractions');
+const decimals = require('../operations/decimals');
 const percentage = require('../operations/percentage');
 
 const exponents = require('../operations/exponents');
@@ -74,6 +75,7 @@ const OPERATIONS_MAP = {
     lcm: lcm,
     hcf: hcf,
     fractions: fractions,
+    decimals: decimals,
     percentage: percentage,
     prime_factorization: primeFactorization,
     logarithms: logarithm
