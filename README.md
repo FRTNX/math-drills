@@ -23,7 +23,7 @@ Users can keep track of their performance using the performance stats page.
 
 [![Math Drills stats page](src/assets/images/readme/3.png?raw=true "Math Drills Stats 1")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/3.png)
 
-Here users have access to a variety of stats that help keep track of their progress. All active user operations may be toggled and compared. Eventually this data will be used more competitively, with features like a leaderboard to help mativate users. 
+Here users have access to a variety of stats that help keep track of their progress. All active user operations may be toggled and compared. Eventually this data will be used more competitively, with features like a leaderboard to help motivate users. 
 
 [![Math Drills stats page 2](src/assets/images/readme/4.png?raw=true "Math Drills Stats 2")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/4.png)
 
@@ -34,9 +34,9 @@ Users can also keep track of their speed per operation.
 ## What's next?
 Some features are already in the pipeline to give more life to this web application:
 
-* irc bridge - Since Math Drills users can't yet interact with each other yet I've decided to persue the social dimension by creating a bridge to liberachat's ##math channel. This will alllow users to interact with liberachat users as well as other Math Drills users, all without leaving the web app.
+* irc bridge - Since Math Drills users can't yet interact with each other I've decided to persue the social dimension by creating a bridge to liberachat's ##math channel. This will alllow users to interact with liberachat users as well as other Math Drills users, all without leaving the web app.
 
-* leaderboard - We all enjoy being the best in the world at something. Adding a leaderboard will help cultivate a competitive spirit amongst users.
+* leaderboard - We all enjoy being the best in the world at something. The incoming leaderboard feature will help cultivate a competitive spirit amongst users.
 
 * math games - A set of unique math games users can play with each other.
 
