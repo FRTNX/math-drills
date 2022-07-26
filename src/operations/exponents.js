@@ -40,19 +40,32 @@ const DIFFICULTY_PROFILES = {
     },
     3: {
         numberOfTerms: [1, 2],
+        factorRange: [1, 10], // multiplicands, including decimals
+        exponents: [-9, 10], // range of powers of 10
+        ops: ['multiplication', 'division'],
+        override: 'SCIENTIFIC_NOTATION',
+        obfuscation: ['none'],
+        timeLimit: 60000,
+        baseAward: [5, 8],
+        timeAward: 1,
+        timePenalty: 2,
+        tooltipIntro: 'Powers of 10 aka combat squads aka scientific notation.\n'
+    },
+    4: {
+        numberOfTerms: [1, 2],
         factorRange: [1, 30],
         exponents: [1, 'fraction'],
         ops: ['addition', 'subtraction', 'multiplication', 'division'],
         obfuscation: ['none'],
         indexRange: [-3, -2, -1, 1, 2, 3, 4], // required where 'fraction' is an exponent
         rootRange: [-3, -2, -1, 1, 2, 3, 4], // required where 'fraction' is an exponent
-        timeLimit: 15000,
+        timeLimit: 30000,
         baseAward: [5, 8],
         timeAward: 1,
         timePenalty: 2,
         tooltipIntro: 'Fractional exponents. As above, so not below. Power over roots. Roots before power.\n'
     },
-    4: {
+    5: {
         numberOfTerms: [1, 2],
         factorRange: [1, 30],
         exponents: [1, 2, 3, 0, -1, -2, -3, 'fraction'], // all together now
@@ -60,7 +73,7 @@ const DIFFICULTY_PROFILES = {
         obfuscation: ['none'],
         indexRange: [-3, -2, -1, 1, 2, 3, 4],
         rootRange: [-3, -2, -1, 1, 2, 3, 4],
-        timeLimit: 15000,
+        timeLimit: 30000,
         baseAward: [5, 8],
         timeAward: 1,
         timePenalty: 2,
@@ -81,6 +94,20 @@ const exponents = async (operation, difficulty) => {
     ];
 
     for (let i = 0; i < numberOfTerms; i++) {
+        // check for any overrides
+        if (difficultyProfile.override) {
+            // generates a single unit decimal ranging from 0.01 to 9.99
+            const base = Math.floor(Math.random() * (1000 - 10) + 10) / 100;
+
+            if (difficultyProfile.override === 'SCIENTIFIC_NOTATION') {
+                const exponent = random(...difficultyProfile.exponents);
+
+                terms.push(base * 10 ** exponent);
+                formattedTerms.push(`${base} \\times 10^{${exponent}}`);
+                continue;
+            }
+        }
+
         const base = random(...difficultyProfile.factorRange);
 
         let exponent = numberOfTerms > 1

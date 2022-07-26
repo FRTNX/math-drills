@@ -10,14 +10,16 @@ const multiplication = require('../operations/multiplication');
 const division = require('../operations/division');
 
 const logarithm = require('../operations/logarithm');
-const primeFactorization = require('../operations/primeFactorization');
+const primeFactorization = require('../operations/prime.factorization');
 
 const lcm = require('../operations/lcm');
 const hcf = require('../operations/hcf');
 
 const fractions = require('../operations/fractions');
 const decimals = require('../operations/decimals');
+
 const percentage = require('../operations/percentage');
+const scientificNotation = require('../operations/scientific.notation');
 
 const exponents = require('../operations/exponents');
 const radicals = require('../operations/radicals');
@@ -78,7 +80,8 @@ const OPERATIONS_MAP = {
     decimals: decimals,
     percentage: percentage,
     prime_factorization: primeFactorization,
-    logarithms: logarithm
+    logarithms: logarithm,
+    scientific_notation: scientificNotation
 };
 
 // if there's no question in the db matching requested criterea

@@ -40,6 +40,12 @@ Some features are already in the pipeline to give more life to this web applicat
 
 * math games - A set of unique math games users can play with each other.
 
+* recommendation engine - An AI-powered recommendation engine that identifies the best set of drills for each user.
+
+* syllabus-oriented drills - This will give users access to questions related to a specific syllabus and help them prepare for exams.
+
+* classrooms - Drill rooms + observation streams/endpoints for educators.
+
 ## Contributions
 Contributions are welcome. I've made the backend code very modular so that new operations can be added with minimal code and without need to update the frontend. That said, I have sinned and will soon repent: (sin #1) All the code is written in Node.js and eventually needs to be converted to TypeScript. I figured I'd build as much I can then write annotations later. As the codebase has grown I now see the error of my ways. (sin #2) For commissioned projects I'm always Mr. TDD. With side projects however... At  the time of writing the codebase is generally bug-free, having explored all features rigorously. Still, there are no tests. I'll be using the mocha-sinon-chai test suite for this task. Test coverage for all the code I've written is my responsibility so I won't be accepting any contributions there. However all new proposed features must be fully tested.
 
