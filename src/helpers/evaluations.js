@@ -1,7 +1,6 @@
 const random = require('../helpers/random');
 
-// a heavy lifter function that will be responsible for custom evaluations
-// for all question types. returns either false or the correct answer
+// responsible for general and custom evaluations for all question types.
 const evaluateAnswer = (question, answer) => {
     if (question.question_type == 'prime_factorization') {
         const userAnswer = answer.user_answer.match(/\d+/g).map((prime) => Number(prime)).sort();
@@ -35,6 +34,7 @@ const generateQuestionLatex = (operator, terms, formattedTerms = [], options = {
     let questionLatex;
     let correctAnswer;
 
+    // ADDITION
     if (operator === 'addition') {
         questionLatex = formattedTerms.length !== 0
             ? formattedTerms.join(' + ')
@@ -44,6 +44,7 @@ const generateQuestionLatex = (operator, terms, formattedTerms = [], options = {
         correctAnswer = terms.reduce((partSum, value) => partSum + value, 0);
     }
 
+    // SUBTRACTION
     if (operator === 'subtraction') {
         questionLatex = formattedTerms.length !== 0
             ? formattedTerms.join(' - ')
@@ -52,6 +53,7 @@ const generateQuestionLatex = (operator, terms, formattedTerms = [], options = {
         correctAnswer = terms.slice(1).reduce((diff, value) => diff - value, terms[0]);
     }
 
+    // MULTIPLICATION
     if (operator === 'multiplication') {
         correctAnswer = terms.reduce((partProd, value) => partProd * value, 1);
 
@@ -83,6 +85,7 @@ const generateQuestionLatex = (operator, terms, formattedTerms = [], options = {
         }
     }
 
+    // DIVISION
     if (operator === 'division') {
         let styles = options.division
             ? options.division.styles

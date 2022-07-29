@@ -95,7 +95,6 @@ const exponents = async (operation, difficulty) => {
     ];
 
     for (let i = 0; i < numberOfTerms; i++) {
-        // check for any overrides
         if (difficultyProfile.override) {
             // generates a decimal ranging from 0.01 to 9.99
             const multiplicand = Math.floor(Math.random() * (1000 - 10) + 10) / 100;
