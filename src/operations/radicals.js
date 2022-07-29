@@ -1,4 +1,6 @@
 const Question = require('../models/question.model');
+const { generateQuestionLatex } = require('../helpers/evaluations');
+
 const random = require('../helpers/random');
 
 const DIFFICULTY_PROFILES = {
@@ -71,47 +73,13 @@ const radicals = async (operation, difficulty) => {
         correctAnswer = terms[0];
     }
 
+    const operator = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
+
     if (terms.length > 1) {
-        const op = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
-
-        if (op === 'addition') {
-            questionLatex = formattedTerms.join(' + ');
-            correctAnswer = terms.reduce((partSum, value) => partSum + value, 0);
-        }
-
-        if (op === 'subtraction') {
-            questionLatex = formattedTerms.join(' - ');
-            correctAnswer = terms.slice(1).reduce((diff, value) => diff - value, terms[0]);
-        }
-
-        if (op === 'multiplication') {
-            correctAnswer = terms.reduce((partProd, value) => partProd * value, 1);
-
-            let styles = ['default', 'dot', 'brackets'];
-            const style = styles[random(0, styles.length)];
-    
-            if (style == 'default') {
-                questionLatex = formattedTerms.join('\\times');
-            }
-        
-            if (style == 'dot') {
-                questionLatex = formattedTerms.join('\\cdot');
-            }
-        
-            if (style == 'brackets') {
-                factors = formattedTerms.map((term, index) => index === 0
-                    ? `${term}`
-                    : `\\left(${term}\\right)` );
-            
-                questionLatex = factors.join('');
-            }
-        }
-
-        // remove division where numberOfTerms > 2, or transform to complex fraction
-        if (op === 'division') {
-            questionLatex = `\\frac{${formattedTerms[0]}}{${formattedTerms[1]}}`;
-            correctAnswer = terms.slice(1).reduce((quotient, value) => quotient / value, terms[0]);
-        }
+        const options = { division: { styles: ['fraction'] }};
+        const result = generateQuestionLatex(operator, terms, formattedTerms, options);
+        questionLatex = result[0];
+        correctAnswer = result[1];
     }
     
     const question = new Question({

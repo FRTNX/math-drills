@@ -1,4 +1,5 @@
 const Question = require('../models/question.model');
+const { generateQuestionLatex } = require('../helpers/evaluations');
 const random = require('../helpers/random');
 
 const DIFFICULTY_PROFILES = {
@@ -41,57 +42,18 @@ const fractions = async (operation, difficulty) => {
         terms.push([numerator, denominator]);
     }
 
-    const op = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
-
     const formattedFractions = terms.map((fraction) => {
         const [numerator, denominator] = fraction;
         return `\\frac{${numerator}}{${denominator}}`;
     });
 
     const decimalFractions = terms.map((fraction) => fraction[0] / fraction[1]);
-    console.log('decimal fractions: ', decimalFractions)
 
-    let questionLatex = '';
-    let correctAnswer;
+    const operator = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
 
-    if (op === 'addition') {
-        correctAnswer = decimalFractions.reduce((sum, value) => sum + value, 0);
-        questionLatex = formattedFractions.join(' + ');
-    }
+    const options = { division: { styles: ['default'] }};
+    const [questionLatex, correctAnswer] = generateQuestionLatex(operator, decimalFractions, formattedFractions, options);
 
-    if (op === 'subtraction') {
-        correctAnswer = decimalFractions.slice(1).reduce((diff, value) => diff - value, decimalFractions[0]);
-        questionLatex = formattedFractions.join(' - ');
-    }
-
-    if (op === 'multiplication') {
-        correctAnswer = decimalFractions.reduce((partProd, value) => partProd * value, 1);
-
-        let styles = ['default', 'dot', 'brackets'];
-        const style = styles[random(0, styles.length)];
-
-        if (style == 'default') {
-            questionLatex = formattedFractions.join('\\times');
-        }
-    
-        if (style == 'dot') {
-            questionLatex = formattedFractions.join('\\cdot');
-        }
-    
-        if (style == 'brackets') {
-            factors = formattedFractions.map((fraction, index) => index === 0
-                ? `${fraction}`
-                : `\\left(${fraction}\\right)` );
-        
-            questionLatex = factors.join('');
-        }
-    }
-
-    if (op === 'division') {
-        correctAnswer = decimalFractions.slice(1).reduce((quotient, value) => quotient / value, decimalFractions[0]);
-        questionLatex = formattedFractions.join('\\div');
-    }
- 
     const question = new Question({
         author: 'DrillBot',
         question_type: operation,

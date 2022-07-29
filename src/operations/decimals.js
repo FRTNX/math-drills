@@ -1,4 +1,6 @@
 const Question = require('../models/question.model');
+const { generateQuestionLatex } = require('../helpers/evaluations');
+
 const random = require('../helpers/random');
 
 const DIFFICULTY_PROFILES = {
@@ -49,46 +51,13 @@ const decimals = async (operation, difficulty) => {
         correctAnswer = terms[0] ** exponent;
     }
 
-    if (terms.length > 1) {
-        const op = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
+    const operator = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
 
-        if (op === 'addition') {
-            correctAnswer = terms.reduce((sum, value) => sum + value, 0);
-            questionLatex = terms.join(' + ');
-        }
-    
-        if (op === 'subtraction') {
-            correctAnswer = terms.slice(1).reduce((diff, value) => diff - value, terms[0]);
-            questionLatex = terms.join(' - ');
-        }
-    
-        if (op === 'multiplication') {
-            correctAnswer = terms.reduce((partProd, value) => partProd * value, 1);
-    
-            let styles = ['default', 'dot', 'brackets'];
-            const style = styles[random(0, styles.length)];
-    
-            if (style == 'default') {
-                questionLatex = terms.join('\\times');
-            }
-        
-            if (style == 'dot') {
-                questionLatex = terms.join('\\cdot');
-            }
-        
-            if (style == 'brackets') {
-                factors = terms.map((fraction, index) => index === 0
-                    ? `${fraction}`
-                    : `\\left(${fraction}\\right)` );
-            
-                questionLatex = factors.join('');
-            }
-        }
-    
-        if (op === 'division') {
-            correctAnswer = terms.slice(1).reduce((quotient, value) => quotient / value, terms[0]);
-            questionLatex = terms.join('\\div');
-        }
+    if (terms.length > 1) {
+        const options = { division: { styles: ['default'] }};
+        const result = generateQuestionLatex(operator, terms, [], options);
+        questionLatex = result[0];
+        correctAnswer = result[1];
     }
  
     const question = new Question({

@@ -1,7 +1,7 @@
 # Math Drills
 Math Drills Server
 
-Acieve math mastery through continuous testing.
+Achieve math mastery through continuous testing.
 
 Math Drills is still in early development and is hosted on Heroku here: https://math-drills-beta.herokuapp.com
 
@@ -23,7 +23,7 @@ Users can keep track of their performance using the performance stats page.
 
 [![Math Drills stats page](src/assets/images/readme/3.png?raw=true "Math Drills Stats 1")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/3.png)
 
-Here users have access to a variety of stats that help keep track of their progress. All active user operations may be toggled and compared. Eventually this data will be used more competitively, with features like a leaderboard to help motivate users. 
+Here users have access to a variety of stats that help keep track of their progress. All active user operations may be toggled and compared. Eventually this data will be displayed more competitively, with features like a leaderboard to help motivate users. 
 
 [![Math Drills stats page 2](src/assets/images/readme/4.png?raw=true "Math Drills Stats 2")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/4.png)
 

@@ -1,4 +1,5 @@
 const Question = require('../models/question.model');
+const { generateQuestionLatex } = require('../helpers/evaluations');
 const random = require('../helpers/random');
 
 const DIFFICULTY_PROFILES = {
@@ -57,8 +58,8 @@ const DIFFICULTY_PROFILES = {
         exponents: [1, 'fraction'],
         ops: ['addition', 'subtraction', 'multiplication', 'division'],
         obfuscation: ['none'],
-        indexRange: [-3, -2, -1, 1, 2, 3, 4], // required where 'fraction' is an exponent
-        rootRange: [-3, -2, -1, 1, 2, 3, 4], // required where 'fraction' is an exponent
+        indexRange: [-3, -2, -1, 1, 2, 3], // required where 'fraction' is an exponent
+        rootRange: [-3, -2, -1, 1, 2, 3], // required where 'fraction' is an exponent
         timeLimit: 30000,
         baseAward: [5, 8],
         timeAward: 1,
@@ -71,8 +72,8 @@ const DIFFICULTY_PROFILES = {
         exponents: [1, 2, 3, 0, -1, -2, -3, 'fraction'], // all together now
         ops: ['addition', 'subtraction', 'multiplication', 'division'],
         obfuscation: ['none'],
-        indexRange: [-3, -2, -1, 1, 2, 3, 4],
-        rootRange: [-3, -2, -1, 1, 2, 3, 4],
+        indexRange: [-3, -2, -1, 1, 2, 3],
+        rootRange: [-3, -2, -1, 1, 2, 3],
         timeLimit: 30000,
         baseAward: [5, 8],
         timeAward: 1,
@@ -96,14 +97,14 @@ const exponents = async (operation, difficulty) => {
     for (let i = 0; i < numberOfTerms; i++) {
         // check for any overrides
         if (difficultyProfile.override) {
-            // generates a single unit decimal ranging from 0.01 to 9.99
-            const base = Math.floor(Math.random() * (1000 - 10) + 10) / 100;
+            // generates a decimal ranging from 0.01 to 9.99
+            const multiplicand = Math.floor(Math.random() * (1000 - 10) + 10) / 100;
 
             if (difficultyProfile.override === 'SCIENTIFIC_NOTATION') {
                 const exponent = random(...difficultyProfile.exponents);
 
-                terms.push(base * 10 ** exponent);
-                formattedTerms.push(`${base} \\times 10^{${exponent}}`);
+                terms.push(multiplicand * 10 ** exponent);
+                formattedTerms.push(`${multiplicand} \\times 10^{${exponent}}`);
                 continue;
             }
         }
@@ -160,57 +161,12 @@ const exponents = async (operation, difficulty) => {
         correctAnswer = terms[0];
     }
 
-    // shared code; todo: move to helpers
+    const operator = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
+
     if (terms.length > 1) {
-        const op = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
-
-        if (op === 'addition') {
-            questionLatex = formattedTerms.join(' + ');
-            correctAnswer = terms.reduce((partSum, value) => partSum + value, 0);
-        }
-
-        if (op === 'subtraction') {
-            questionLatex = formattedTerms.join(' - ');
-            correctAnswer = terms.slice(1).reduce((diff, value) => diff - value, terms[0]);
-        }
-
-        if (op === 'multiplication') {
-            correctAnswer = terms.reduce((partProd, value) => partProd * value, 1);
-
-            let styles = ['default', 'dot', 'brackets'];
-            const style = styles[random(0, styles.length)];
-
-            if (style == 'default') {
-                questionLatex = formattedTerms.join('\\times');
-            }
-
-            if (style == 'dot') {
-                questionLatex = formattedTerms.join('\\cdot');
-            }
-
-            if (style == 'brackets') {
-                factors = formattedTerms.map((term, index) => index === 0
-                    ? `${term}`
-                    : `\\left(${term}\\right)`);
-
-                questionLatex = factors.join('');
-            }
-        }
-
-        if (op === 'division') {
-            let styles = ['default', 'fraction'];
-            const style = styles[random(0, styles.length)];
-
-            if (style === 'default') {
-                questionLatex = formattedTerms.join('\\div');
-            }
-
-            if (style === 'fraction') {
-                questionLatex = `\\frac{${formattedTerms[0]}}{${formattedTerms[1]}}`;
-            }
-
-            correctAnswer = terms.slice(1).reduce((quotient, value) => quotient / value, terms[0]);
-        }
+        const result = generateQuestionLatex(operator, terms, formattedTerms);
+        questionLatex = result[0];
+        correctAnswer = result[1];
     }
 
     const question = new Question({
@@ -224,6 +180,7 @@ const exponents = async (operation, difficulty) => {
         time_award: difficultyProfile.timeAward,
         time_penalty: difficultyProfile.timePenalty
     });
+
 
     const existingQuestion = await Question.findOne({
         question_type: operation,
