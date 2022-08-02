@@ -1,7 +1,9 @@
+export { };
+
 const Question = require('../models/question.model');
 const UserAnswer = require('../models/user.answer.model');
 
-const errorHandler = require('./../helpers/dbErrorHandler');
+const errorHandler = require('./../helpers/db.error.handler');
 
 const addition = require('../operations/addition');
 const subtraction = require('../operations/subtraction');
@@ -26,6 +28,35 @@ const radicals = require('../operations/radicals');
 
 const summation = require('../operations/summation');
 
+type QuestionType = 'addition' | 'subtraction' | 'multiplication' | 'division' |
+    'fractions' | 'decimals' | 'prime_factorization' | 'lcm' | 'hcf' |
+    'exponents' | 'scientific_notation' | 'radicals' | 'summation' | 'percentage' |
+    'logarithms';
+
+interface IQuestion {
+    _id: string,
+    author: string,
+    question_type: QuestionType
+    question_difficulty: number,
+    question_latex: string,
+    correct_answer?: string,
+    base_award?: number,
+    time_limit: number,
+    time_award?: number,
+    time_penalty?: number
+}
+
+interface IRequest {
+    query: {
+        op: string,
+        difficulty: number
+    }
+}
+
+interface IResponse {
+    status: Function,
+    json: Function,
+}
 
 const removeSecrets = (question) => {
     question.correct_answer = undefined;
@@ -37,7 +68,7 @@ const removeSecrets = (question) => {
     return question;
 };
 
-const checkForExistingQuestion = async (operation, difficulty) => {
+const checkForExistingQuestion = async (operation: QuestionType, difficulty: number): Promise<false | IQuestion> => {
     const userAnswers = await UserAnswer.find({
         question_type: operation,
         question_difficulty: difficulty
@@ -50,14 +81,11 @@ const checkForExistingQuestion = async (operation, difficulty) => {
         question_difficulty: Number(difficulty)
     });
 
-    console.log('Found existing question: ', existingQuestion)
-
     if (!existingQuestion) {
         return false;
     }
 
-    const isAlreadyAnswered = answeredQuestionIds.includes(existingQuestion._id.toString());
-    console.log('is already answered:', isAlreadyAnswered)
+    const isAlreadyAnswered: boolean = answeredQuestionIds.includes(existingQuestion._id.toString());
 
     if (isAlreadyAnswered) {
         return false;
@@ -71,27 +99,27 @@ const OPERATIONS_MAP = {
     subtraction: subtraction,
     multiplication: multiplication,
     division: division,
-    exponents: exponents,
-    radicals: radicals,
-    summation: summation,
-    lcm: lcm,
-    hcf: hcf,
     fractions: fractions,
     decimals: decimals,
-    percentage: percentage,
     prime_factorization: primeFactorization,
+    lcm: lcm,
+    hcf: hcf,
+    exponents: exponents,
+    scientific_notation: scientificNotation,
+    radicals: radicals,
+    summation: summation,
+    percentage: percentage,
     logarithms: logarithm,
-    scientific_notation: scientificNotation
 };
 
 // if there's no question in the db matching requested criterea
 // or all such questions have already been answered by the user,
 // let Drill Bot generate a new question, persist it, then send it
 // to the user
-const fetchQuestion = async (request, response) => {
+const fetchQuestion = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
     try {
-        const operation = request.query.op;
-        const difficulty = request.query.difficulty;
+        const operation: string = request.query.op;
+        const difficulty: number = request.query.difficulty;
 
         // let questions accumilate for a few weeks before uncommenting
         // let question = await checkForExistingQuestion(operation, difficulty);
@@ -101,7 +129,7 @@ const fetchQuestion = async (request, response) => {
         //     return response.status(200).json(removeSecrets(question));
         // }
 
-        let question = await OPERATIONS_MAP[operation].exec(operation, difficulty);
+        let question: Promise<IQuestion> = await OPERATIONS_MAP[operation].exec(operation, difficulty);
 
         question = removeSecrets(question);
 
@@ -114,22 +142,22 @@ const fetchQuestion = async (request, response) => {
     }
 };
 
-const listOperations = (request, response) => {
+const listOperations = (request: IRequest, response: IResponse) : IResponse => {
     const operationsDetails = Object.keys(OPERATIONS_MAP).reduce((operations, operation) => ({
         ...operations, [operation]: OPERATIONS_MAP[operation].levels
     }), {});
 
-    response.json(operationsDetails);
+    return response.json(operationsDetails);
 };
 
-const fetchTooltipMessage = async (request, response) => {
+const fetchTooltipMessage = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
     try {
-        const [operation, difficulty] = [
+        const [operation, difficulty]: [string, number] = [
             request.query.op,
             request.query.difficulty
         ];
 
-        const message = OPERATIONS_MAP[operation].tooltips[difficulty];
+        const message: string = OPERATIONS_MAP[operation].tooltips[difficulty];
 
         response.json({ message });
     } catch (error) {

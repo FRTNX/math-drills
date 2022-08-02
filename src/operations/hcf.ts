@@ -1,5 +1,20 @@
+export {};
+
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
+
+interface IQuestion {
+    author: string,
+    question_type: string,
+    question_difficulty: number,
+    question_latex: string,
+    correct_answer: string | number,
+    time_limit: number,
+    base_award: number,
+    time_award: number,
+    time_penalty: number,
+    display_type: string
+}
 
 const DIFFICULTY_PROFILES = {
     0: {
@@ -25,29 +40,29 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const hcf = async (operation, difficulty) => {
+const hcf = async (operation : string, difficulty : number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const numberOfTerms = random(...difficultyProfile.numberOfTerms);
+    const numberOfTerms : number = random(...difficultyProfile.numberOfTerms);
 
-    const terms = [];
-    const primes = [];
+    const terms : Array<number> = [];
+    const primes : Array<Array<number>> = [];
 
     // at the end of this for loop, where, for example, terms = [8, 15, 50] the 
     // primes array would then be [[2, 2, 2], [3, 5], [2, 5, 5]]
     for (let i = 0; i < numberOfTerms; i++) {
-        const numberOfPrimes = random(...difficultyProfile.numberOfPrimes);
-        const primeIndices = [];
+        const numberOfPrimes : number = random(...difficultyProfile.numberOfPrimes);
+        const primeIndices : Array<number> = [];
 
         for (let i = 0; i < numberOfPrimes; i++) {
-            const primeIndex = random(0, difficultyProfile.primes.length);
+            const primeIndex : number = random(0, difficultyProfile.primes.length);
             primeIndices.push(primeIndex);
         };
 
         const selectedPrimes = primeIndices.map((index) => difficultyProfile.primes[index]);
         primes.push(selectedPrimes);
 
-        const product = selectedPrimes.reduce((prod, partProd) => prod * partProd, 1);
+        const product : number = selectedPrimes.reduce((prod, partProd) => prod * partProd, 1);
         terms.push(product);
     }
 
@@ -70,10 +85,9 @@ const hcf = async (operation, difficulty) => {
 
     const commonFactors = {};
 
-
     const checkOccurances = (array, element) => {
         let counter = 0;
-        for (item of array.flat()) {
+        for (const item of array.flat()) {
             if (item == element) {
                 counter ++;
             }
@@ -86,21 +100,21 @@ const hcf = async (operation, difficulty) => {
     // all prime arrays in primes
     Object.keys(primeArrayDetails).map((arrayIndex) => {
         Object.keys(primeArrayDetails[arrayIndex]).map((prime) => {
-            const currentOccurance = primeArrayDetails[arrayIndex][prime];
+            const currentOccurance : number = primeArrayDetails[arrayIndex][prime];
             if (primes.every((primeArray) => checkOccurances(primeArray, prime) >= currentOccurance)) {
                 commonFactors[prime] = currentOccurance;
             }
         })
-    })
+    });
 
-    let product = 1; // default where no other common factors are found
+    let product : number = 1; // default where no other common factors are found
 
     if (Object.keys(commonFactors).length > 0) {
         const factors = Object.keys(commonFactors).map((prime) => Number(prime) ** commonFactors[prime]);
         product = factors.reduce((prod, partProd) => prod * partProd, 1);
     }
 
-    const questionLatex = terms.join(', ');
+    const questionLatex : string = terms.join(', ');
 
     const question = new Question({
         author: 'DrillBot',
@@ -139,7 +153,7 @@ const hcf = async (operation, difficulty) => {
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message = `${difficultyProfile.tooltipIntro || ''} ` +
+    const message : string = `${difficultyProfile.tooltipIntro || ''} ` +
         `Find the highest common factor of these numbers. ` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
@@ -151,4 +165,3 @@ module.exports = {
     levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
     tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
 };
-

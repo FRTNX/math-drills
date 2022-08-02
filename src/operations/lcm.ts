@@ -1,5 +1,20 @@
+export {};
+
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
+
+interface IQuestion {
+    author: string,
+    question_type: string,
+    question_difficulty: number,
+    question_latex: string,
+    correct_answer: string | number,
+    time_limit: number,
+    base_award: number,
+    time_award: number,
+    time_penalty: number,
+    display_type: string
+}
 
 const DIFFICULTY_PROFILES = {
     0: {
@@ -25,35 +40,32 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const lcm = async (operation, difficulty) => {
+const lcm = async (operation : string, difficulty : number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const numberOfTerms = random(...difficultyProfile.numberOfTerms);
+    const numberOfTerms : number = random(...difficultyProfile.numberOfTerms);
 
-    const terms = []; // terms to display
-    const primes = []; // the prime factors that form the selected terms
+    const terms : Array<number> = []; // terms to display
+    const primes : Array<Array<number>> = []; // the prime factors that form the selected terms
 
     // can't see the point of a test so evil it uses more then ~5 terms.
     // i mean why. i mean you could, but why. anyway, the low ceiling means these
     // for loops are always finite enough to be quick.
     for (let i = 0; i < numberOfTerms; i++) {
-        const numberOfPrimes = random(...difficultyProfile.numberOfPrimes);
-        const primeIndices = [];
+        const numberOfPrimes : number = random(...difficultyProfile.numberOfPrimes);
+        const primeIndices : Array<number> = [];
 
         for (let i = 0; i < numberOfPrimes; i++) {
-            const primeIndex = random(0, difficultyProfile.primes.length);
+            const primeIndex : number = random(0, difficultyProfile.primes.length);
             primeIndices.push(primeIndex);
         };
 
         const selectedPrimes = primeIndices.map((index) => difficultyProfile.primes[index]);
         primes.push(selectedPrimes);
 
-        const product = selectedPrimes.reduce((prod, partProd) => prod * partProd, 1);
+        const product : number = selectedPrimes.reduce((prod, partProd) => prod * partProd, 1);
         terms.push(product);
     }
-
-    console.log('Generated terms: ', terms)
-    console.log('And their primes: ', primes)
 
     const primeArrayDetails = {};
 
@@ -87,13 +99,11 @@ const lcm = async (operation, difficulty) => {
         })
     })
 
-    console.log('prime count: ', primeCount)
-
     const factors = Object.keys(primeCount).map((prime) => Number(prime) ** primeCount[prime]);
 
-    const product = factors.reduce((prod, partProd) => prod * partProd, 1);
+    const product : number = factors.reduce((prod, partProd) => prod * partProd, 1);
 
-    const questionLatex = terms.join(', ');
+    const questionLatex : string = terms.join(', ');
 
     const question = new Question({
         author: 'DrillBot',
@@ -132,7 +142,7 @@ const lcm = async (operation, difficulty) => {
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message = `${difficultyProfile.tooltipIntro || ''} ` +
+    const message : string = `${difficultyProfile.tooltipIntro || ''} ` +
         `Find the lowest common multiple of these numbers. ` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 

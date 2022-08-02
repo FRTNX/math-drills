@@ -1,87 +1,90 @@
+
+export {};
+
 const Question = require('../models/question.model');
+const random = require('../helpers/random');
+
 const { generateQuestionLatex } = require('../helpers/evaluations');
 
-const random = require('../helpers/random');
+interface IQuestion {
+    author: string,
+    question_type: string,
+    question_difficulty: number,
+    question_latex: string,
+    correct_answer: string | number,
+    time_limit: number,
+    base_award: number,
+    time_award: number,
+    time_penalty: number
+}
 
 const DIFFICULTY_PROFILES = {
     0: {
-        numberOfTerms: [1],
-        rootRange: [1, 30],
-        indices: [2], // square roots
-        ops: [],
+        numberOfTerms: [1, 2],
+        factorRange: [1, 10], // multiplicands, including decimals
+        exponents: [-9, 10], // powers of 10
+        multiplicandParams: [1000, 10],
+        operators: ['multiplication', 'division'],
         obfuscation: ['none'],
-        timeLimit: 7000,
+        timeLimit: 60000,
         baseAward: [4, 6],
         timeAward: 1,
         timePenalty: 2,
-        tooltipIntro: 'Square roots, confer truth, over you.\n'
+        tooltipIntro: 'The distances between stars and the lengths of nano particles.\n'
     },
     1: {
-        numberOfTerms: [1],
-        rootRange: [1, 15],
-        indices: [3], // cube roots
-        ops: [],
-        obfuscation: ['none'],
-        timeLimit: 8000,
-        baseAward: [4, 6],
-        timeAward: 1,
-        timePenalty: 2,
-        tooltipIntro: 'Cube roots for my valentine.\n'
-    },
-    2: {
         numberOfTerms: [1, 2],
-        rootRange: [1, 15],
-        indices: [2, 3],
-        ops: ['addition', 'subtraction', 'multiplication', 'division'],
+        factorRange: [1, 15],
+        exponents: [-15, 16],
+        multiplicandParams: [10000, 10],
+        operators: ['multiplication', 'division'],
         obfuscation: ['none'],
-        timeLimit: 20000,
-        baseAward: [4, 6],
+        timeLimit: 60000,
+        baseAward: [5, 8],
         timeAward: 1,
         timePenalty: 2,
-        tooltipIntro: 'Squares, cubes, free for all.\n'
+        tooltipIntro: 'From subatomic quantum disturbances to the Andromeda galaxy and beyond.\n'
     }
 };
 
-const radicals = async (operation, difficulty) => {
+const scientific_notation = async (operation : string, difficulty : number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
+
+    const terms : Array<number> = [];
+    const formattedTerms : Array<string> = [];
 
     const numberOfTerms = difficultyProfile.numberOfTerms[
         random(0, difficultyProfile.numberOfTerms.length)
     ];
 
-    const terms = [];
-    const formattedTerms = [];
+    for (let i = 0; i < numberOfTerms; i++) {
+        const [max, min] : [number, number] = difficultyProfile.multiplicandParams;
+        const multiplicand : string = Number(Math.floor(Math.random() * (max - min) + min) / 100).toFixed(1);
+        const exponent : number = random(...difficultyProfile.exponents);
 
-    for (let i = 0; i < numberOfTerms; i ++) {
-        const root = random(...difficultyProfile.rootRange);
-        const index = difficultyProfile.indices[random(0, difficultyProfile.indices.length)];
-    
-        const radicand = root ** index;
-
-        index === 2
-            ? formattedTerms.push(`\\sqrt{${radicand}}`)
-            : formattedTerms.push(`\\sqrt[${index}]{${radicand}}`);
-
-        terms.push(root);
+        terms.push(Number(multiplicand) * 10 ** exponent);
+        formattedTerms.push(`${multiplicand} \\times 10^{${exponent}}`);
     }
 
-    let questionLatex = '';
-    let correctAnswer;
+    let questionLatex : string;
+    let correctAnswer : number;
 
     if (terms.length === 1) {
         questionLatex = formattedTerms[0];
         correctAnswer = terms[0];
     }
 
-    const operator = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
-
     if (terms.length > 1) {
+        const operator : string = difficultyProfile.operators[
+            random(0, difficultyProfile.operators.length)
+        ];
+    
         const options = { division: { styles: ['fraction'] }};
-        const result = generateQuestionLatex(operator, terms, formattedTerms, options);
+        const result : [string, number] = generateQuestionLatex(operator, terms, formattedTerms, options);
         questionLatex = result[0];
         correctAnswer = result[1];
     }
-    
+
     const question = new Question({
         author: 'DrillBot',
         question_type: operation,
@@ -103,7 +106,7 @@ const radicals = async (operation, difficulty) => {
     if (existingQuestion) {
         return existingQuestion;
     }
-    
+
     try {
         await question.save();
     } catch (error) {
@@ -118,14 +121,15 @@ const radicals = async (operation, difficulty) => {
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message = `${difficultyProfile.tooltipIntro || ''}` +
+    const message : string = `${difficultyProfile.tooltipIntro || ''}` +
+        `Round the result to 2 decimal places. ` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };
 });
 
 module.exports = {
-    exec: radicals,
+    exec: scientific_notation,
     levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
     tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
 };

@@ -1,8 +1,23 @@
+export {};
+
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
 
+interface IQuestion {
+    author: string,
+    question_type: string,
+    question_difficulty: number,
+    question_latex: string,
+    correct_answer: string | number,
+    time_limit: number,
+    base_award: number,
+    time_award: number,
+    time_penalty: number
+}
+
 const DIFFICULTY_PROFILES = {
     0: {
+        operators:  ['addition', 'exponent'],
         lowerLimitRange: [1, 10],
         sequenceRange: [4, 6],
         timeLimit: 30000,
@@ -10,47 +25,46 @@ const DIFFICULTY_PROFILES = {
         timeAward: 1,
         timePenalty: 3,
         tooltipIntro: 'This op is so you dont think Math Drills is soft. ' +
-            'More complex ops on the way.'
+            'More complex operators on the way.'
     }
 };
 
-const summation = async (operation, difficulty) => {
+const summation = async (operation : string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    let sum = 0;
+    let sum : number = 0;
 
-    const lowerLimit = random(...difficultyProfile.lowerLimitRange);
-    const sequenceLength = random(...difficultyProfile.sequenceRange);
+    const lowerLimit : number = random(...difficultyProfile.lowerLimitRange);
+    const sequenceLength : number = random(...difficultyProfile.sequenceRange);
 
-    const upperLimit = lowerLimit + sequenceLength;
+    const upperLimit : number = lowerLimit + sequenceLength;
 
-    const sequence = Array.from(
+    const sequence : Array<number> = Array.from(
         { length: upperLimit - (lowerLimit -1) },
         (_, i) => (lowerLimit - 1) + 1 + i);
 
-    // const ops = ['addition', 'subtraction', 'multiplication', 'division', 'exponent'];
-    const ops = ['addition', 'exponent'];
+    const operator : string = difficultyProfile.operators[
+        random(0, difficultyProfile.operators.length)
+    ];
 
-    const op = ops[random(0, ops.length)];
+    const variables : Array<string> = ['n', 'i'];
+    const variable : string = variables[random(0, variables.length)];
 
-    const variables = ['n', 'i'];
-    const variable = variables[random(0, variables.length)];
+    let rightSide : string;
 
-    let rightSide = '';
-
-    if (op == 'addition') {
-        const addend = random(1, 5);
+    if (operator == 'addition') {
+        const addend : number = random(1, 5);
         rightSide = `${variable} + ${addend}`;
         sequence.map((n) => sum += n + addend);
     };
 
-    if (op == 'exponent') {
-        const exponent = random(2, 5);
+    if (operator == 'exponent') {
+        const exponent : number = random(2, 5);
         rightSide = `${variable}^${exponent}`;
         sequence.map((n) => sum += n ** exponent);
     }
 
-    const questionLatex = `\\displaystyle\\sum_{${variable}=${lowerLimit}}^{${upperLimit}} ${rightSide}`;
+    const questionLatex : string = `\\displaystyle\\sum_{${variable}=${lowerLimit}}^{${upperLimit}} ${rightSide}`;
 
     const question = new Question({
         author: 'DrillBot',
@@ -88,7 +102,7 @@ const summation = async (operation, difficulty) => {
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message = `${difficultyProfile.tooltipIntro || ''} ` +
+    const message : string = `${difficultyProfile.tooltipIntro || ''} ` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };

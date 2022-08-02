@@ -1,13 +1,28 @@
+export {};
+
 const Question = require('../models/question.model');
-const { generateQuestionLatex } = require('../helpers/evaluations');
 const random = require('../helpers/random');
+
+const { generateQuestionLatex } = require('../helpers/evaluations');
+
+interface IQuestion {
+    author: string,
+    question_type: string,
+    question_difficulty: number,
+    question_latex: string,
+    correct_answer: string | number,
+    time_limit: number,
+    base_award: number,
+    time_award: number,
+    time_penalty: number
+};
 
 const DIFFICULTY_PROFILES = {
     0: {
         numberOfTerms: [1, 2],
         factorRange: [1, 30],
         exponents: [1, 2], // squares; the first exponent must always be 1, for all levels
-        ops: ['addition', 'subtraction', 'multiplication', 'division'],
+        operators: ['addition', 'subtraction', 'multiplication', 'division'],
         obfuscation: ['none'],
         timeLimit: 7000,
         baseAward: [4, 6],
@@ -19,7 +34,7 @@ const DIFFICULTY_PROFILES = {
         numberOfTerms: [1, 2],
         factorRange: [1, 15],
         exponents: [1, 3], // + cubes
-        ops: ['addition', 'subtraction', 'multiplication', 'division'],
+        operators: ['addition', 'subtraction', 'multiplication', 'division'],
         obfuscation: ['none'],
         timeLimit: 8000,
         baseAward: [5, 8],
@@ -31,7 +46,7 @@ const DIFFICULTY_PROFILES = {
         numberOfTerms: [1, 2],
         factorRange: [1, 30],
         exponents: [1, 2, 3, 0, -1, -2, -3], // + negatives and 0
-        ops: ['addition', 'subtraction', 'multiplication', 'division'],
+        operators: ['addition', 'subtraction', 'multiplication', 'division'],
         obfuscation: ['none'],
         timeLimit: 15000,
         baseAward: [5, 8],
@@ -43,7 +58,7 @@ const DIFFICULTY_PROFILES = {
         numberOfTerms: [1, 2],
         factorRange: [1, 10], // multiplicands, including decimals
         exponents: [-9, 10], // range of powers of 10
-        ops: ['multiplication', 'division'],
+        operators: ['multiplication', 'division'],
         override: 'SCIENTIFIC_NOTATION',
         obfuscation: ['none'],
         timeLimit: 60000,
@@ -56,7 +71,7 @@ const DIFFICULTY_PROFILES = {
         numberOfTerms: [1, 2],
         factorRange: [1, 30],
         exponents: [1, 'fraction'],
-        ops: ['addition', 'subtraction', 'multiplication', 'division'],
+        operators: ['addition', 'subtraction', 'multiplication', 'division'],
         obfuscation: ['none'],
         indexRange: [-3, -2, -1, 1, 2, 3], // required where 'fraction' is an exponent
         rootRange: [-3, -2, -1, 1, 2, 3], // required where 'fraction' is an exponent
@@ -70,7 +85,7 @@ const DIFFICULTY_PROFILES = {
         numberOfTerms: [1, 2],
         factorRange: [1, 30],
         exponents: [1, 2, 3, 0, -1, -2, -3, 'fraction'], // all together now
-        ops: ['addition', 'subtraction', 'multiplication', 'division'],
+        operators: ['addition', 'subtraction', 'multiplication', 'division'],
         obfuscation: ['none'],
         indexRange: [-3, -2, -1, 1, 2, 3],
         rootRange: [-3, -2, -1, 1, 2, 3],
@@ -82,25 +97,25 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const exponents = async (operation, difficulty) => {
+const exponents = async (operation : string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const terms = [];
-    const formattedTerms = [];
+    const terms : Array<number> = [];
+    const formattedTerms : Array<string> = [];
 
-    let hasExponent = false;
+    let hasExponent : boolean = false;
 
-    const numberOfTerms = difficultyProfile.numberOfTerms[
+    const numberOfTerms : number = difficultyProfile.numberOfTerms[
         random(0, difficultyProfile.numberOfTerms.length)
     ];
 
     for (let i = 0; i < numberOfTerms; i++) {
         if (difficultyProfile.override) {
             // generates a decimal ranging from 0.01 to 9.99
-            const multiplicand = Math.floor(Math.random() * (1000 - 10) + 10) / 100;
+            const multiplicand : number = Math.floor(Math.random() * (1000 - 10) + 10) / 100;
 
             if (difficultyProfile.override === 'SCIENTIFIC_NOTATION') {
-                const exponent = random(...difficultyProfile.exponents);
+                const exponent : number = random(...difficultyProfile.exponents);
 
                 terms.push(multiplicand * 10 ** exponent);
                 formattedTerms.push(`${multiplicand} \\times 10^{${exponent}}`);
@@ -108,7 +123,7 @@ const exponents = async (operation, difficulty) => {
             }
         }
 
-        const base = random(...difficultyProfile.factorRange);
+        const base : number = random(...difficultyProfile.factorRange);
 
         let exponent = numberOfTerms > 1
             ? difficultyProfile.exponents[random(0, difficultyProfile.exponents.length)]
@@ -125,14 +140,14 @@ const exponents = async (operation, difficulty) => {
         }
 
         // holds the obfuscated value
-        let exponentValue;
+        let exponentValue : number;
 
         if (exponent === 'fraction') {
-            const numerator = difficultyProfile.indexRange[
+            const numerator : number = difficultyProfile.indexRange[
                 random(0, difficultyProfile.indexRange.length)
             ];
 
-            const denominator = difficultyProfile.rootRange[
+            const denominator : number = difficultyProfile.rootRange[
                 random(0, difficultyProfile.rootRange.length)
             ];
 
@@ -149,21 +164,20 @@ const exponents = async (operation, difficulty) => {
             : terms.push(base ** exponent);
     }
 
-    console.log('terms: ', terms)
-    console.log('formatted terms:', formattedTerms)
-
-    let questionLatex = '';
-    let correctAnswer;
+    let questionLatex : string;
+    let correctAnswer : number;
 
     if (terms.length === 1) {
         questionLatex = formattedTerms[0];
         correctAnswer = terms[0];
     }
 
-    const operator = difficultyProfile.ops[random(0, difficultyProfile.ops.length)];
-
     if (terms.length > 1) {
-        const result = generateQuestionLatex(operator, terms, formattedTerms);
+        const operator : string = difficultyProfile.operators[
+            random(0, difficultyProfile.operators.length)
+        ];
+    
+        const result : [string, number] = generateQuestionLatex(operator, terms, formattedTerms);
         questionLatex = result[0];
         correctAnswer = result[1];
     }
@@ -205,7 +219,7 @@ const exponents = async (operation, difficulty) => {
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message = `${difficultyProfile.tooltipIntro || ''}` +
+    const message : string = `${difficultyProfile.tooltipIntro || ''}` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };

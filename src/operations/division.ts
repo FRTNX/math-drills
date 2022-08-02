@@ -1,5 +1,19 @@
+export {};
+
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
+
+interface IQuestion {
+    author: string,
+    question_type: string,
+    question_difficulty: number,
+    question_latex: string,
+    correct_answer: string | number,
+    time_limit: number,
+    base_award: number,
+    time_award: number,
+    time_penalty: number
+}
 
 const DIFFICULTY_PROFILES = {
     0: {
@@ -10,7 +24,7 @@ const DIFFICULTY_PROFILES = {
         timeAward: 2,
         timePenalty: 1,
     },
-    0: {
+    1: {
         quotientRange: [-2, 20],
         divisorRange: [-10, 30],
         timeLimit: 20000, // todo: adjust values accordingly
@@ -18,7 +32,7 @@ const DIFFICULTY_PROFILES = {
         timeAward: 2,
         timePenalty: 1
     },
-    1: {
+    2: {
         quotientRange: [-20, 50],
         divisorRange: [-10, 50],
         timeLimit: 20000,
@@ -26,7 +40,7 @@ const DIFFICULTY_PROFILES = {
         timeAward: 2,
         timePenalty: 1
     },
-    2: {
+    3: {
         quotientRange: [-50, 50],
         divisorRange: [-50, 50],
         timeLimit: 20000,
@@ -36,21 +50,24 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const division = async (operation, difficulty) => {
+const division = async (operation: string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const quotient = random(...difficultyProfile.quotientRange);
-    const divisor = random(...difficultyProfile.divisorRange);
+    const quotient: number = random(...difficultyProfile.quotientRange);
+    const divisor: number = random(...difficultyProfile.divisorRange);
 
-    const dividend = quotient * divisor;
+    const dividend: number = quotient * divisor;
 
-    const styles = ['default', 'fraction'];
-    const style = styles[random(0, styles.length)];
+    const styles: Array<string> = ['default', 'fraction'];
+    const style: string = styles[random(0, styles.length)];
 
-    let questionLatex = '';
+    let questionLatex : string = '';
 
     if (style == 'default') {
-        const formattedTerms = [dividend, divisor].map((term) => term < 0 ? `(${term})` : `${term}`);
+        const formattedTerms = [dividend, divisor].map((term) => term < 0
+            ? `(${term})` // place negative values in brackets for readability
+            : `${term}`);
+
         questionLatex = formattedTerms.join('\\div');
     }
 

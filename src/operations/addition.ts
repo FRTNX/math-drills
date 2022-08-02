@@ -1,5 +1,19 @@
+export {};
+
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
+
+interface IQuestion {
+    author: string,
+    question_type: string,
+    question_difficulty: number,
+    question_latex: string,
+    correct_answer: string | number,
+    time_limit: number,
+    base_award: number,
+    time_award: number,
+    time_penalty: number
+};
 
 const DIFFICULTY_PROFILES = {
     0: {
@@ -22,22 +36,25 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const addition = async (operation, difficulty) => {
+const addition = async (operation: string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const addends = [];
-    const numberOfTerms = difficultyProfile.numberOfTerms;
+    const addends: Array<number> = [];
+    const numberOfTerms: number = difficultyProfile.numberOfTerms;
 
     for (let i = 0; i < numberOfTerms; i++) {
         const addend = random(...difficultyProfile.range);
         addends.push(addend);
     }
 
-    const sum = addends.reduce((sum, value) => sum + value, 0);
+    const sum: number = addends.reduce((sum, value) => sum + value, 0);
 
-    const formattedAddends = addends.map((addend) => addend < 0 ? `(${addend})` : `${addend}`);
-
-    const questionLatex = formattedAddends.join(' + ');
+    // initially had a more readable Array.map thing going on here
+    // but Typescript was like nah bro. This simply does a conditional
+    // addends.join(' + '), wrapping the addend in brackets where negative.
+    const questionLatex: string = addends.slice(1).reduce((latex, value) => 
+        latex + ' + ' + (value < 0 ? `(${value})` : value), `${addends[0]}`
+    );
 
     const question = new Question({
         author: 'DrillBot',
@@ -78,7 +95,7 @@ const addition = async (operation, difficulty) => {
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message = `${difficultyProfile.tooltipIntro || ''}` +
+    const message: string = `${difficultyProfile.tooltipIntro || ''}` +
         `Typically ${difficultyProfile.numberOfTerms} terms, ` +
         `ranging from ${difficultyProfile.range[0]} to ${difficultyProfile.range[1]}. ` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`

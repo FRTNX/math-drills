@@ -1,5 +1,19 @@
+export {};
+
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
+
+interface IQuestion {
+    author: string,
+    question_type: string,
+    question_difficulty: number,
+    question_latex: string,
+    correct_answer: string | number,
+    time_limit: number,
+    base_award: number,
+    time_award: number,
+    time_penalty: number
+}
 
 const DIFFICULTY_PROFILES = {
     0: {
@@ -22,30 +36,30 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const multiplication = async (operation, difficulty) => {
+const multiplication = async (operation : string, difficulty : number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const factors = [];
-    const numberOfTerms = difficultyProfile.numberOfTerms;
+    const factors : Array<number> = [];
+    const numberOfTerms : number = difficultyProfile.numberOfTerms;
 
     for (let i = 0; i < numberOfTerms; i ++) {
-        const factor = random(...difficultyProfile.range);
+        const factor : number = random(...difficultyProfile.range);
         factors.push(factor);
     }
 
-    const product = factors.reduce((partProd, value) => partProd * value, 1);
+    const product : number = factors.reduce((partProd, value) => partProd * value, 1);
 
     let formattedFactors = factors.map((factor) => factor < 0 ? `(${factor})` : `${factor}`);
 
-    let styles = ['default', 'dot'];
+    let styles : Array<string> = ['default', 'dot'];
     
     if (Number(difficulty) === 0) {
         styles.push('brackets');
     };
 
-    const style = styles[random(0, styles.length)];
+    const style : string = styles[random(0, styles.length)];
 
-    let questionLatex = '';
+    let questionLatex : string;
 
     if (style == 'default') {
         questionLatex = formattedFactors.join('\\times');
@@ -97,7 +111,7 @@ const multiplication = async (operation, difficulty) => {
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message = `${difficultyProfile.tooltipIntro || ''}` +
+    const message : string = `${difficultyProfile.tooltipIntro || ''}` +
     `Typically ${difficultyProfile.numberOfTerms} factors, ` +
     `ranging from ${difficultyProfile.range[0]} to ${difficultyProfile.range[1]}. ` +
     `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`

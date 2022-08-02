@@ -1,3 +1,5 @@
+export {};
+
 const { config } = require('../../config/config');
 
 const User = require('../models/user.model');
@@ -6,7 +8,7 @@ const UserAnswer = require('../models/user.answer.model');
 const Question = require('../models/question.model');
 
 const extend = require('lodash/extend');
-const errorHandler = require('./../helpers/dbErrorHandler');
+const errorHandler = require('./../helpers/db.error.handler');
 
 const formidable = require('formidable');
 const fs = require('fs');
@@ -26,7 +28,7 @@ const shuffle = (array) => {
     return array;
 };
 
-const populateRandomizedData = async (userId, operation) => {
+const populateRandomizedData = async (userId: string, operation?: string) => {
     let questionTypes;
 
     if (operation) {

@@ -1,5 +1,17 @@
+export {};
+
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+
+interface IUser {
+    name: string,
+    level_details?: Array<any>,
+    email: string,
+    hashed_password: string,
+    salt: string,
+    about: string,
+    photo: Buffer
+}
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -19,12 +31,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: "Password is required"
     },
-    salt: String,
-    updated: Date,
-    created: {
-        type: Date,
-        default: Date.now
-    },
+    salt: String,    
     about: {
         type: String,
         trim: true
@@ -33,8 +40,11 @@ const UserSchema = new mongoose.Schema({
         data: Buffer,
         contentType: String
     },
-    following: [{type: mongoose.Schema.ObjectId, ref: 'User'}],
-    followers: [{type: mongoose.Schema.ObjectId, ref: 'User'}]
+    created: {
+        type: Date,
+        default: Date.now
+    },
+    updated: Date
 });
 
 UserSchema

@@ -1,11 +1,31 @@
+export {};
+
 const UserAnswer = require('../models/user.answer.model');
 const Question = require('../models/question.model');
 const AbortedQuestion = require('../models/aborted.question.model');
-const errorHandler = require('./../helpers/dbErrorHandler');
+const errorHandler = require('./../helpers/db.error.handler');
 const evaluations = require('./../helpers/evaluations'); // use this eventually
 
+interface IRequest {
+    query?: {
+        user_id?: string,
+        question_id?: string,
+        question_type?: string,
+    },
+    body?: {
+        user_id?: string
+        question_id?: string,
+        question_type: string,
+        time_taken?: number
+    }
+}
 
-const saveUserAnswer = async (request, response) => {
+interface IResponse {
+    status: Function,
+    json: Function,
+}
+
+const saveUserAnswer = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
     try {
         console.log('Got user answer: ', request.body)
         const question = await Question.findOne({ _id: request.body.question_id });
@@ -73,7 +93,7 @@ const saveUserAnswer = async (request, response) => {
     }
 };
 
-const abortQuestion = async (request, response) => {
+const abortQuestion = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
     try {
         const userId = request.query.user_id;
         const questionId = request.query.question_id;
@@ -107,9 +127,9 @@ const abortQuestion = async (request, response) => {
     }
 };
 
-const fetchUserAnswers = async (request, response) => {
+const fetchUserAnswers = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
     try {
-        let query = { user_id: request.query.user_id };
+        let query = { user_id: request.query.user_id, question_type: '' };
 
         request.query.question_type
             ? query.question_type = request.query.question_type

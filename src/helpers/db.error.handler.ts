@@ -1,15 +1,18 @@
-/**
- * These functions are used to get readable error messages from MongoDB.
- */
-const getUniqueErrorMessage = (err) => {
+interface IError {
+    message: string,
+    code: number
+}
+
+const getUniqueErrorMessage = (err: IError) : string => {
     try {
-        let fieldName = err.message.substring(err.message.lastIndexOf('.$') + 2, err.message.lastIndexOf('_1'));
+        let fieldName: string = err.message.substring(err.message.lastIndexOf('.$') + 2, err.message.lastIndexOf('_1'));
         return fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ' already exists';
     } catch (exception) {
         return 'Unique field already exists';
     }
-}
-module.exports.getErrorMessage = (err) => {
+};
+
+module.exports.getErrorMessage = (err: IError) : string => {
     let message = '';
 
     if (err.code) {

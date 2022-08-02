@@ -1,4 +1,24 @@
+export {};
+
 const mongoose = require('mongoose');
+
+type QuestionType = 'addition' | 'subtraction' | 'multiplication' | 'division' |
+    'fractions' | 'decimals' | 'prime_factorization' | 'lcm' | 'hcf' |
+    'exponents' | 'scientific_notation' | 'radicals' | 'summation' | 'percentage' |
+    'logarithms';
+
+interface IUserAnswer {
+    user_id: string,
+    author: string,
+    question_id: string,
+    question_type: QuestionType
+    question_category?: string,
+    question_difficulty: number,
+    user_answer: string,
+    is_correct: boolean,
+    time_taken: number,
+    rating: number
+}
 
 const UserAnswerSchema = new mongoose.Schema({
     user_id: {

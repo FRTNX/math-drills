@@ -1,7 +1,34 @@
+export {};
+
 const random = require('../helpers/random');
 
+type QuestionType = 'addition' | 'subtraction' | 'multiplication' | 'division' |
+    'fractions' | 'decimals' | 'prime_factorization' | 'lcm' | 'hcf' |
+    'exponents' | 'scientific_notation' | 'radicals' | 'summation' | 'percentage' |
+    'logarithms';
+
+interface IQuestion {
+    question_type: QuestionType,
+    correct_answer: string
+}
+
+interface IUserAnswer {
+    user_answer: string
+}
+
+interface IOptions {
+    division?: {
+        styles?: Array<string>
+    }
+}
+
+interface IEvaluation {
+    isCorrect: boolean,
+    correctAnswer: string | number
+}
+
 // responsible for general and custom evaluations for all question types.
-const evaluateAnswer = (question, answer) => {
+const evaluateAnswer = (question: IQuestion, answer: IUserAnswer) : IEvaluation => {
     if (question.question_type == 'prime_factorization') {
         const userAnswer = answer.user_answer.match(/\d+/g).map((prime) => Number(prime)).sort();
         const formattedCorrectAnswer = JSON.parse(question.correct_answer).join('\\cdot');
@@ -28,11 +55,10 @@ const evaluateAnswer = (question, answer) => {
  * @param {array} formattedTerms optional yet favoured. string representations of the terms array. useful
  * where a questions terms are themselves LaTeX expressions.
  */
-const generateQuestionLatex = (operator, terms, formattedTerms = [], options = {}) => {
-    console.log('Operator: ', operator)
-    console.log('terms: ', terms)
-    let questionLatex;
-    let correctAnswer;
+const generateQuestionLatex = (operator: string, terms: Array<number>,
+    formattedTerms: Array<string> = [], options: IOptions = {}) : [string, number] => {
+    let questionLatex: string;
+    let correctAnswer: number;
 
     // ADDITION
     if (operator === 'addition') {
@@ -57,8 +83,8 @@ const generateQuestionLatex = (operator, terms, formattedTerms = [], options = {
     if (operator === 'multiplication') {
         correctAnswer = terms.reduce((partProd, value) => partProd * value, 1);
 
-        let styles = ['default', 'dot', 'brackets'];
-        const style = styles[random(0, styles.length)];
+        let styles: Array<string> = ['default', 'dot', 'brackets'];
+        const style: string = styles[random(0, styles.length)];
 
         if (style == 'default') {
             questionLatex = formattedTerms.length !== 0
@@ -73,10 +99,10 @@ const generateQuestionLatex = (operator, terms, formattedTerms = [], options = {
         }
 
         if (style == 'brackets') {
-            factors = formattedTerms.length !== 0
-                ? formattedTerms.map((term, index) => index === 0
-                    ? `${term}`
-                    : `\\left(${term}\\right)`)
+            const factors = formattedTerms.length !== 0
+                ? formattedTerms.map((formattedTerm, index) => index === 0
+                    ? `${formattedTerm}`
+                    : `\\left(${formattedTerm}\\right)`)
                 : terms.map((term, index) => index === 0
                     ? `${term}`
                     : `\\left(${term}\\right)`)
@@ -108,7 +134,6 @@ const generateQuestionLatex = (operator, terms, formattedTerms = [], options = {
         correctAnswer = terms.slice(1).reduce((quotient, value) => quotient / value, terms[0]);
     }
 
-    console.log('returning:', questionLatex, correctAnswer)
     return [questionLatex, correctAnswer];
 };
 

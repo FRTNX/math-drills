@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+    },
+    "files": [
+        "./src/operations/addition.ts",
+        "./src/operations/decimals.ts",
+        "./src/operations/division.ts",
+        "./src/operations/exponents.ts",
+        "./src/operations/fractions.ts",
+        "./src/operations/hcf.ts",
+        "./src/operations/lcm.ts",
+        "./src/operations/logarithm.ts",
+        "./src/operations/multiplication.ts",
+        "./src/operations/percentage.ts",
+        "./src/operations/prime.factorization.ts",
+        "./src/operations/radicals.ts",
+        "./src/operations/scientific.notation.ts",
+        "./src/operations/subtraction.ts",
+        "./src/operations/summation.ts",
+        "./src/models/aborted.question.model.ts",
+        "./src/models/question.model.ts",
+        "./src/models/user.answer.model.ts",
+        "./src/models/user.model.ts",
+        "./src/models/user.preference.model.ts",
+        "./src/helpers/db.error.handler.ts",
+        "./src/helpers/evaluations.ts",
+        "./src/helpers/random.ts",
+        "./src/controllers/auth.controller.ts",
+        "./src/controllers/operations.controller.ts",
+        "./src/controllers/user.answer.controller.ts",
+        "./src/controllers/user.controller.ts"
+
+    ]
+}
