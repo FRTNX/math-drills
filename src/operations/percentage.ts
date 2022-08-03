@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
@@ -29,37 +29,37 @@ const DIFFICULTY_PROFILES = {
     },
 };
 
-const percentage = async (operation : string, difficulty : number) : Promise<IQuestion> => {
+const percentage = async (operation: string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const variables : Array<string> = ['rate', 'base', 'percentage']; // obfuscatable values
-    const valueToHide : string = variables[random(0, variables.length)];
+    const variables: Array<string> = ['rate', 'base', 'percentage']; // obfuscatable values
+    const valueToHide: string = variables[random(0, variables.length)];
 
-    let questionLatex : string;
-    let correctAnswer : number;
+    let questionLatex: string;
+    let correctAnswer: number;
 
     if (valueToHide === 'rate') {
-        const base : number = random(...difficultyProfile.baseRange);
-        const percentage : number = random(...difficultyProfile.percentageRange);
-        const rate : number = (percentage / base) * 100;
+        const base: number = random(...difficultyProfile.baseRange);
+        const percentage: number = random(...difficultyProfile.percentageRange);
+        const rate: number = (percentage / base) * 100;
 
         questionLatex = `?% of ${base} = ${percentage}`;
         correctAnswer = rate;
     }
 
     if (valueToHide === 'base') {
-        const rate : number = random(...difficultyProfile.rateRange);
-        const percentage : number = random(...difficultyProfile.percentageRange);
-        const base : number = percentage / (rate / 100);
+        const rate: number = random(...difficultyProfile.rateRange);
+        const percentage: number = random(...difficultyProfile.percentageRange);
+        const base: number = percentage / (rate / 100);
 
         questionLatex = `${rate}% of ? = ${percentage}`;
         correctAnswer = base;
     }
 
     if (valueToHide === 'percentage') {
-        const rate : number = random(...difficultyProfile.rateRange);
-        const base : number = random(...difficultyProfile.baseRange);
-        const percentage : number = (rate / 100) * base;
+        const rate: number = random(...difficultyProfile.rateRange);
+        const base: number = random(...difficultyProfile.baseRange);
+        const percentage: number = (rate / 100) * base;
 
         questionLatex = `${rate}% of ${base} = ?`;
         correctAnswer = percentage;
@@ -102,7 +102,7 @@ const percentage = async (operation : string, difficulty : number) : Promise<IQu
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message : string = `${difficultyProfile.tooltipIntro || ''}` +
+    const message: string = `${difficultyProfile.tooltipIntro || ''}` +
         `You really ought to remember this: p = r(b); r = p/b; b = p/r. ` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 

@@ -1,6 +1,9 @@
-const express = require('express');
+export { };
+
 const authCtrl = require('../controllers/auth.controller');
 const userAnswerCtrl = require('../controllers/user.answer.controller');
+
+const express = require('express');
 
 const router = express.Router();
 

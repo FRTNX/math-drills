@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
@@ -97,25 +97,25 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const exponents = async (operation : string, difficulty: number) : Promise<IQuestion> => {
+const exponents = async (operation: string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const terms : Array<number> = [];
-    const formattedTerms : Array<string> = [];
+    const terms: Array<number> = [];
+    const formattedTerms: Array<string> = [];
 
-    let hasExponent : boolean = false;
+    let hasExponent: boolean = false;
 
-    const numberOfTerms : number = difficultyProfile.numberOfTerms[
+    const numberOfTerms: number = difficultyProfile.numberOfTerms[
         random(0, difficultyProfile.numberOfTerms.length)
     ];
 
     for (let i = 0; i < numberOfTerms; i++) {
         if (difficultyProfile.override) {
             // generates a decimal ranging from 0.01 to 9.99
-            const multiplicand : number = Math.floor(Math.random() * (1000 - 10) + 10) / 100;
+            const multiplicand: number = Math.floor(Math.random() * (1000 - 10) + 10) / 100;
 
             if (difficultyProfile.override === 'SCIENTIFIC_NOTATION') {
-                const exponent : number = random(...difficultyProfile.exponents);
+                const exponent: number = random(...difficultyProfile.exponents);
 
                 terms.push(multiplicand * 10 ** exponent);
                 formattedTerms.push(`${multiplicand} \\times 10^{${exponent}}`);
@@ -123,7 +123,7 @@ const exponents = async (operation : string, difficulty: number) : Promise<IQues
             }
         }
 
-        const base : number = random(...difficultyProfile.factorRange);
+        const base: number = random(...difficultyProfile.factorRange);
 
         let exponent = numberOfTerms > 1
             ? difficultyProfile.exponents[random(0, difficultyProfile.exponents.length)]
@@ -140,14 +140,14 @@ const exponents = async (operation : string, difficulty: number) : Promise<IQues
         }
 
         // holds the obfuscated value
-        let exponentValue : number;
+        let exponentValue: number;
 
         if (exponent === 'fraction') {
-            const numerator : number = difficultyProfile.indexRange[
+            const numerator: number = difficultyProfile.indexRange[
                 random(0, difficultyProfile.indexRange.length)
             ];
 
-            const denominator : number = difficultyProfile.rootRange[
+            const denominator: number = difficultyProfile.rootRange[
                 random(0, difficultyProfile.rootRange.length)
             ];
 
@@ -164,8 +164,8 @@ const exponents = async (operation : string, difficulty: number) : Promise<IQues
             : terms.push(base ** exponent);
     }
 
-    let questionLatex : string;
-    let correctAnswer : number;
+    let questionLatex: string;
+    let correctAnswer: number;
 
     if (terms.length === 1) {
         questionLatex = formattedTerms[0];
@@ -173,11 +173,11 @@ const exponents = async (operation : string, difficulty: number) : Promise<IQues
     }
 
     if (terms.length > 1) {
-        const operator : string = difficultyProfile.operators[
+        const operator: string = difficultyProfile.operators[
             random(0, difficultyProfile.operators.length)
         ];
     
-        const result : [string, number] = generateQuestionLatex(operator, terms, formattedTerms);
+        const result: [string, number] = generateQuestionLatex(operator, terms, formattedTerms);
         questionLatex = result[0];
         correctAnswer = result[1];
     }
@@ -219,7 +219,7 @@ const exponents = async (operation : string, difficulty: number) : Promise<IQues
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message : string = `${difficultyProfile.tooltipIntro || ''}` +
+    const message: string = `${difficultyProfile.tooltipIntro || ''}` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };

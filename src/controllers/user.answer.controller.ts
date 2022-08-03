@@ -1,8 +1,10 @@
-export {};
+export { };
 
 const UserAnswer = require('../models/user.answer.model');
+
 const Question = require('../models/question.model');
 const AbortedQuestion = require('../models/aborted.question.model');
+
 const errorHandler = require('./../helpers/db.error.handler');
 const evaluations = require('./../helpers/evaluations'); // use this eventually
 
@@ -43,7 +45,7 @@ const saveUserAnswer = async (request: IRequest, response: IResponse) : Promise<
             .limit(1)
             .exec();
 
-        const timeTaken = request.body.time_taken;
+        const timeTaken: number = request.body.time_taken;
 
         let currentRating = 0;
         lastRelatedAnswer.length > 0
@@ -55,7 +57,7 @@ const saveUserAnswer = async (request: IRequest, response: IResponse) : Promise<
         }
 
         else {
-            let baseAward = question.base_award;
+            let baseAward: number = question.base_award;
 
             timeTaken <= question.time_limit
                 ? baseAward += question.time_award // todo: tighten time award threshold

@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
@@ -34,30 +34,30 @@ const DIFFICULTY_PROFILES = {
 const decimals = async (operation: string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const numberOfTerms : number = difficultyProfile.numberOfTerms[
+    const numberOfTerms: number = difficultyProfile.numberOfTerms[
         random(0, difficultyProfile.numberOfTerms.length)
     ];
 
-    const terms : Array<number> = [];
+    const terms: Array<number> = [];
 
     for (let i = 0; i < numberOfTerms; i++) {
-        const [max, min] : [number, number] = difficultyProfile.decimalRange;
-        const decimalPlaces : number = difficultyProfile.decimalPlaces[
+        const [max, min]: [number, number] = difficultyProfile.decimalRange;
+        const decimalPlaces: number = difficultyProfile.decimalPlaces[
             random(0, difficultyProfile.decimalPlaces.length)
         ];
 
-        const decimal : number = Math.floor(Math.random() * (max - min) + min) / 100;
+        const decimal: number = Math.floor(Math.random() * (max - min) + min) / 100;
 
         terms.push(Number(decimal.toFixed(decimalPlaces)));
     }
 
     terms.map((decimal) => Number(decimal));
 
-    let questionLatex : string = '';
+    let questionLatex: string = '';
     let correctAnswer: number;
 
     if (terms.length === 1) {
-        const exponent : number = difficultyProfile.exponents[
+        const exponent: number = difficultyProfile.exponents[
             random(0, difficultyProfile.exponents.length)
         ];
 
@@ -66,12 +66,12 @@ const decimals = async (operation: string, difficulty: number) : Promise<IQuesti
     }
 
     if (terms.length > 1) {
-        const operator : string = difficultyProfile.operators[
+        const operator: string = difficultyProfile.operators[
             random(0, difficultyProfile.operators.length)
         ];
     
         const options = { division: { styles: ['default'] }};
-        const result : [string, number] = generateQuestionLatex(operator, terms, [], options);
+        const result: [string, number] = generateQuestionLatex(operator, terms, [], options);
         questionLatex = result[0];
         correctAnswer = result[1];
     }
@@ -112,7 +112,7 @@ const decimals = async (operation: string, difficulty: number) : Promise<IQuesti
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message = `${difficultyProfile.tooltipIntro || ''} ` +
+    const message: string = `${difficultyProfile.tooltipIntro || ''} ` +
         `Express the answer as a decimal rounded to 2 decimal places where necessary. ` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 

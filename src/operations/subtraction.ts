@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
@@ -32,24 +32,24 @@ const DIFFICULTY_PROFILES = {
         timeAward: 2,
         timePenalty: 1
     }
-}
+};
 
-const subtraction = async (operation : string, difficulty : number) : Promise<IQuestion> => {
+const subtraction = async (operation: string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const selectedTerms : Array<number>= [];
-    const numberOfTerms : number = difficultyProfile.numberOfTerms;
+    const selectedTerms: Array<number>= [];
+    const numberOfTerms: number = difficultyProfile.numberOfTerms;
 
     for (let i = 0; i < numberOfTerms; i ++) {
-        const term : number = random(...difficultyProfile.range);
+        const term: number = random(...difficultyProfile.range);
         selectedTerms.push(term);
     }
 
-    const difference : number = selectedTerms.slice(1).reduce((diff, value) => diff - value, selectedTerms[0]);
+    const difference: number = selectedTerms.slice(1).reduce((diff, value) => diff - value, selectedTerms[0]);
 
     const formattedTerms = selectedTerms.map((term) => term < 0 ? `(${term})` : `${term}`);
 
-    const questionLatex : string = formattedTerms.join(' - ');
+    const questionLatex: string = formattedTerms.join(' - ');
 
     const question = new Question({
         author: 'DrillBot',
@@ -87,7 +87,7 @@ const subtraction = async (operation : string, difficulty : number) : Promise<IQ
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message : string = `${difficultyProfile.tooltipIntro || ''} ` +
+    const message: string = `${difficultyProfile.tooltipIntro || ''} ` +
         `There's no such thing as subtraction... ` + 
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 

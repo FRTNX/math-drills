@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
@@ -36,30 +36,30 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const multiplication = async (operation : string, difficulty : number) : Promise<IQuestion> => {
+const multiplication = async (operation: string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const factors : Array<number> = [];
-    const numberOfTerms : number = difficultyProfile.numberOfTerms;
+    const factors: Array<number> = [];
+    const numberOfTerms: number = difficultyProfile.numberOfTerms;
 
     for (let i = 0; i < numberOfTerms; i ++) {
-        const factor : number = random(...difficultyProfile.range);
+        const factor: number = random(...difficultyProfile.range);
         factors.push(factor);
     }
 
-    const product : number = factors.reduce((partProd, value) => partProd * value, 1);
+    const product: number = factors.reduce((partProd, value) => partProd * value, 1);
 
     let formattedFactors = factors.map((factor) => factor < 0 ? `(${factor})` : `${factor}`);
 
-    let styles : Array<string> = ['default', 'dot'];
+    let styles: Array<string> = ['default', 'dot'];
     
     if (Number(difficulty) === 0) {
         styles.push('brackets');
     };
 
-    const style : string = styles[random(0, styles.length)];
+    const style: string = styles[random(0, styles.length)];
 
-    let questionLatex : string;
+    let questionLatex: string;
 
     if (style == 'default') {
         questionLatex = formattedFactors.join('\\times');
@@ -111,7 +111,7 @@ const multiplication = async (operation : string, difficulty : number) : Promise
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message : string = `${difficultyProfile.tooltipIntro || ''}` +
+    const message: string = `${difficultyProfile.tooltipIntro || ''}` +
     `Typically ${difficultyProfile.numberOfTerms} factors, ` +
     `ranging from ${difficultyProfile.range[0]} to ${difficultyProfile.range[1]}. ` +
     `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`

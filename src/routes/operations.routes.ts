@@ -1,7 +1,11 @@
-const express = require('express');
+export { };
+
 const authCtrl = require('../controllers/auth.controller');
 const userCtrl = require('../controllers/user.controller');
+
 const opCtrl = require('../controllers/operations.controller');
+
+const express = require('express');
 
 const router = express.Router();
 

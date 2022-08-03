@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
@@ -27,14 +27,14 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const logarithm = async (operation : string, difficulty : number) : Promise<IQuestion> => {
+const logarithm = async (operation: string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const base : number= random(...difficultyProfile.logBaseRange);
-    const exponent : number = random(...difficultyProfile.exponentRange);
-    const result : number = base ** exponent;
+    const base: number= random(...difficultyProfile.logBaseRange);
+    const exponent: number = random(...difficultyProfile.exponentRange);
+    const result: number = base ** exponent;
 
-    const questionLatex : string = `\\log_{${base}} ${result}`;
+    const questionLatex: string = `\\log_{${base}} ${result}`;
 
     const question = new Question({
         author: 'DrillBot',
@@ -72,7 +72,7 @@ const logarithm = async (operation : string, difficulty : number) : Promise<IQue
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message : string = `${difficultyProfile.tooltipIntro || ''} ` +
+    const message: string = `${difficultyProfile.tooltipIntro || ''} ` +
         `These logs are generated using some novel backend kung fu ` +
         `Report buggy questions to the developer (hover mouse over copyright for contact detail)` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`

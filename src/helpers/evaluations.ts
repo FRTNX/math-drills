@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const random = require('../helpers/random');
 

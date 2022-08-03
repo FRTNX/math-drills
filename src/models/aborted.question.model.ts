@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const { Schema, model } = require('mongoose');
 

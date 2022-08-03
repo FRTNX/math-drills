@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
@@ -59,21 +59,21 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const radicals = async (operation : string, difficulty : number) : Promise<IQuestion> => {
+const radicals = async (operation: string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const numberOfTerms : number = difficultyProfile.numberOfTerms[
+    const numberOfTerms: number = difficultyProfile.numberOfTerms[
         random(0, difficultyProfile.numberOfTerms.length)
     ];
 
-    const terms : Array<number> = [];
-    const formattedTerms : Array<string> = [];
+    const terms: Array<number> = [];
+    const formattedTerms: Array<string> = [];
 
     for (let i = 0; i < numberOfTerms; i ++) {
-        const root : number= random(...difficultyProfile.rootRange);
-        const index : number = difficultyProfile.indices[random(0, difficultyProfile.indices.length)];
+        const root: number= random(...difficultyProfile.rootRange);
+        const index: number = difficultyProfile.indices[random(0, difficultyProfile.indices.length)];
     
-        const radicand : number = root ** index;
+        const radicand: number = root ** index;
 
         index === 2
             ? formattedTerms.push(`\\sqrt{${radicand}}`)
@@ -82,8 +82,8 @@ const radicals = async (operation : string, difficulty : number) : Promise<IQues
         terms.push(root);
     }
 
-    let questionLatex : string;
-    let correctAnswer : number;
+    let questionLatex: string;
+    let correctAnswer: number;
 
     if (terms.length === 1) {
         questionLatex = formattedTerms[0];
@@ -91,12 +91,12 @@ const radicals = async (operation : string, difficulty : number) : Promise<IQues
     }
 
     if (terms.length > 1) {
-        const operator : string = difficultyProfile.operators[
+        const operator: string = difficultyProfile.operators[
             random(0, difficultyProfile.operators.length)
         ];
     
         const options = { division: { styles: ['fraction'] }};
-        const result : [string, number] = generateQuestionLatex(operator, terms, formattedTerms, options);
+        const result: [string, number] = generateQuestionLatex(operator, terms, formattedTerms, options);
         questionLatex = result[0];
         correctAnswer = result[1];
     }
@@ -137,7 +137,7 @@ const radicals = async (operation : string, difficulty : number) : Promise<IQues
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message : string = `${difficultyProfile.tooltipIntro || ''}` +
+    const message: string = `${difficultyProfile.tooltipIntro || ''}` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };

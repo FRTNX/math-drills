@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
@@ -42,22 +42,22 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const primeFactorization = async (operation : string, difficulty : number) : Promise<IQuestion> => {
+const primeFactorization = async (operation: string, difficulty : number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const primes : Array<number> = difficultyProfile.primes;
-    const primeIndices : Array<number> = [];
+    const primes: Array<number> = difficultyProfile.primes;
+    const primeIndices: Array<number> = [];
 
-    const numberOfPrimes : number = random(...difficultyProfile.numberOfPrimes);
+    const numberOfPrimes: number = random(...difficultyProfile.numberOfPrimes);
     for (let i = 0; i < numberOfPrimes; i++) {
-        const primeIndex : number = random(0, primes.length);
+        const primeIndex: number = random(0, primes.length);
         primeIndices.push(primeIndex);
     };
 
     const selectedPrimes = primeIndices.map((index) => primes[index]);
-    const product : number = selectedPrimes.reduce((prod, partProd) => prod * partProd, 1);
+    const product: number = selectedPrimes.reduce((prod, partProd) => prod * partProd, 1);
 
-    const questionLatex : string = `${product}`;
+    const questionLatex: string = `${product}`;
 
     const question = new Question({
         author: 'DrillBot',
@@ -95,7 +95,7 @@ const primeFactorization = async (operation : string, difficulty : number) : Pro
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message : string = `${difficultyProfile.tooltipIntro || ''} ` +
+    const message: string = `${difficultyProfile.tooltipIntro || ''} ` +
         `Express this number as its prime factors. ` +
         `Provide the factors separated by spaces. For example 8 = 2 2 2. ` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`

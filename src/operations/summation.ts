@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
@@ -29,42 +29,42 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const summation = async (operation : string, difficulty: number) : Promise<IQuestion> => {
+const summation = async (operation: string, difficulty: number) : Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    let sum : number = 0;
+    let sum: number = 0;
 
-    const lowerLimit : number = random(...difficultyProfile.lowerLimitRange);
-    const sequenceLength : number = random(...difficultyProfile.sequenceRange);
+    const lowerLimit: number = random(...difficultyProfile.lowerLimitRange);
+    const sequenceLength: number = random(...difficultyProfile.sequenceRange);
 
-    const upperLimit : number = lowerLimit + sequenceLength;
+    const upperLimit: number = lowerLimit + sequenceLength;
 
-    const sequence : Array<number> = Array.from(
+    const sequence: Array<number> = Array.from(
         { length: upperLimit - (lowerLimit -1) },
         (_, i) => (lowerLimit - 1) + 1 + i);
 
-    const operator : string = difficultyProfile.operators[
+    const operator: string = difficultyProfile.operators[
         random(0, difficultyProfile.operators.length)
     ];
 
-    const variables : Array<string> = ['n', 'i'];
-    const variable : string = variables[random(0, variables.length)];
+    const variables: Array<string> = ['n', 'i'];
+    const variable: string = variables[random(0, variables.length)];
 
-    let rightSide : string;
+    let rightSide: string;
 
     if (operator == 'addition') {
-        const addend : number = random(1, 5);
+        const addend: number = random(1, 5);
         rightSide = `${variable} + ${addend}`;
         sequence.map((n) => sum += n + addend);
     };
 
     if (operator == 'exponent') {
-        const exponent : number = random(2, 5);
+        const exponent: number = random(2, 5);
         rightSide = `${variable}^${exponent}`;
         sequence.map((n) => sum += n ** exponent);
     }
 
-    const questionLatex : string = `\\displaystyle\\sum_{${variable}=${lowerLimit}}^{${upperLimit}} ${rightSide}`;
+    const questionLatex: string = `\\displaystyle\\sum_{${variable}=${lowerLimit}}^{${upperLimit}} ${rightSide}`;
 
     const question = new Question({
         author: 'DrillBot',
@@ -102,7 +102,7 @@ const summation = async (operation : string, difficulty: number) : Promise<IQues
 const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
-    const message : string = `${difficultyProfile.tooltipIntro || ''} ` +
+    const message: string = `${difficultyProfile.tooltipIntro || ''} ` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 
     return { [difficulty]: message };

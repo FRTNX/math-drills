@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const mongoose = require('mongoose');
 

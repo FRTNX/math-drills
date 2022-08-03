@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const { config } = require('../../config/config');
 
@@ -16,11 +16,48 @@ const fs = require('fs');
 const random = require('../helpers/random');
 const profileImage = fs.readFileSync('./src/assets/images/p3.jpg');
 
+interface IRequest {
+    query?: {
+        user_id?: string,
+        question_id?: string,
+        question_type?: string,
+        key?: string
+    },
+    body?: {
+        user_id?: string
+        question_id?: string,
+        question_type: string,
+        time_taken?: number
+    },
+    profile?: {
+        hashed_password: string,
+        salt: string,
+        photo: {
+            contentType: string,
+            data: Buffer
+        },
+        updated: number,
+        save: Function,
+    }
+}
+
+interface IResponse {
+    status: Function,
+    json: Function,
+    set: Function,
+    send: Function,
+    sendFile: Function
+}
+
+interface IRandomizedAnswer {
+    isCorrect: boolean
+}
+
 // Durstenfeld shuffle; todo: change to Fisher-Yates; eventually move to helpers
-const shuffle = (array) => {
+const shuffle = (array: Array<IRandomizedAnswer>) : Array<IRandomizedAnswer> => {
     for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
+        var j: number = Math.floor(Math.random() * (i + 1));
+        var temp: IRandomizedAnswer = array[i];
         array[i] = array[j];
         array[j] = temp;
     };
@@ -29,7 +66,7 @@ const shuffle = (array) => {
 };
 
 const populateRandomizedData = async (userId: string, operation?: string) => {
-    let questionTypes;
+    let questionTypes: Array<string>;
 
     if (operation) {
         questionTypes = [operation];
@@ -51,12 +88,12 @@ const populateRandomizedData = async (userId: string, operation?: string) => {
             return;
         }
 
-        const numberOfQuestions = random(11, 20);
+        const numberOfQuestions: number = random(11, 20);
 
-        const randomizedAnswers = [];
+        const randomizedAnswers: Array<IRandomizedAnswer> = [];
 
-        const incorrectAnswers = random(3, 5);
-        const correctAnswers = numberOfQuestions - incorrectAnswers;
+        const incorrectAnswers: number = random(3, 5);
+        const correctAnswers: number = numberOfQuestions - incorrectAnswers;
 
         for (let i = 0; i < correctAnswers; i++) {
             randomizedAnswers.push({ isCorrect: true });
@@ -66,15 +103,15 @@ const populateRandomizedData = async (userId: string, operation?: string) => {
             randomizedAnswers.push({ isCorrect: false });
         }
 
-        let currentRating = 0;
+        let currentRating: number = 0;
 
         shuffle(randomizedAnswers).map(async (randomizedAnswer) => {
             const question = await Question.findOne({ question_type: questionType, difficulty: 0 });
 
-            const timeTaken = random(1000, question.time_limit + 1000);
+            const timeTaken: number = random(1000, question.time_limit + 1000);
 
             if (randomizedAnswer.isCorrect) {
-                const questionAward = timeTaken <= question.time_limit
+                const questionAward: number = timeTaken <= question.time_limit
                     ? question.base_award
                     : question.base_award - question.time_penalty;
                 currentRating += questionAward;
@@ -103,7 +140,7 @@ const populateRandomizedData = async (userId: string, operation?: string) => {
     return { [userId]: result.filter((r) => !r === false) };
 };
 
-const create = async (request, response) => {
+const create = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
     try {
         const user = new User(request.body);
         await user.save();
@@ -119,13 +156,13 @@ const create = async (request, response) => {
     }
 };
 
-const populateOps = async (request, response) => {
+const populateOps = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
     try {
-        const userIds = [];
+        const userIds: Array<string> = [];
 
         if (request.query.user_id) {
-            const userId = request.query.user_id;
-            const userExists = await User.exists({ _id: userId });
+            const userId: string = request.query.user_id;
+            const userExists: boolean = await User.exists({ _id: userId });
 
             if (!userExists) {
                 return response.status(404).json({ error: 'user not found' });
@@ -158,7 +195,8 @@ const populateOps = async (request, response) => {
     }
 };
 
-const userByID = async (request, response, next, id) => {
+const userByID = async (request: IRequest,
+    response: IResponse,next: Function, id: string) : Promise<IResponse|void> => {
     try {
         let user = await User.findById(id).populate('following', '_id name')
             .populate('followers', '_id name')
@@ -179,13 +217,13 @@ const userByID = async (request, response, next, id) => {
     }
 };
 
-const read = (request, response) => {
+const read = (request: IRequest, response: IResponse) : IResponse => {
     request.profile.hashed_password = undefined;
     request.profile.salt = undefined;
     return response.json(request.profile);
 };
 
-const update = (request, response) => {
+const update = async (request: IRequest, response: IResponse) => {
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
     form.parse(request, async (error, fields, files) => {
@@ -207,7 +245,7 @@ const update = (request, response) => {
             await user.save();
             user.hashed_password = undefined;
             user.salt = undefined;
-            response.json(user);
+            return response.json(user);
         } catch (error) {
             return response.status(400).json({
                 error: errorHandler.getErrorMessage(error)
@@ -216,7 +254,7 @@ const update = (request, response) => {
     });
 };
 
-const photo = (request, response, next) => {
+const photo = (request: IRequest, response: IResponse, next: Function) => {
     if (request.profile.photo.data) {
         response.set("Content-Type", request.profile.photo.contentType);
         return response.send(request.profile.photo.data);
@@ -224,11 +262,11 @@ const photo = (request, response, next) => {
     next();
 };
 
-const defaultPhoto = (request, response) => {
+const defaultPhoto = (request: IRequest, response: IResponse) => {
     return response.sendFile(process.cwd() + profileImage);
 }
 
-const userCount = async (request, response) => {
+const userCount = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
     try {
         if (request.query.key !== config.adminKey) {
             throw new Error('Oh no you dont')

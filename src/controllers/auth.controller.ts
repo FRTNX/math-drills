@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
@@ -20,8 +20,8 @@ interface IRequest {
 
 interface IResponse {
     status: Function,
-    cookie: Function,
     json: Function,
+    cookie: Function,
     clearCookie: Function
 }
 

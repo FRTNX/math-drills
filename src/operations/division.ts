@@ -1,4 +1,4 @@
-export {};
+export { };
 
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
@@ -61,7 +61,7 @@ const division = async (operation: string, difficulty: number) : Promise<IQuesti
     const styles: Array<string> = ['default', 'fraction'];
     const style: string = styles[random(0, styles.length)];
 
-    let questionLatex : string = '';
+    let questionLatex: string = '';
 
     if (style == 'default') {
         const formattedTerms = [dividend, divisor].map((term) => term < 0
