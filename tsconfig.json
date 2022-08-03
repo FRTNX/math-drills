@@ -29,7 +29,15 @@
         "./src/controllers/auth.controller.ts",
         "./src/controllers/operations.controller.ts",
         "./src/controllers/user.answer.controller.ts",
-        "./src/controllers/user.controller.ts"
-
+        "./src/controllers/user.controller.ts",
+        "./src/controllers/user.stats.controller.ts",
+        "./src/routes/auth.routes.ts",
+        "./src/routes/operations.routes.ts",
+        "./src/routes/user.answer.routes.ts",
+        "./src/routes/user.routes.ts",
+        "./src/routes/user.stats.routes.ts",
+        "./src/express.ts",
+        "./src/server.ts",
+        "./config/config.ts"
     ]
 }
