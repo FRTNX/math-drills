@@ -1,5 +1,6 @@
 export { };
 
+
 const Question = require('../models/question.model');
 const UserAnswer = require('../models/user.answer.model');
 
@@ -28,39 +29,12 @@ const radicals = require('../operations/radicals');
 
 const summation = require('../operations/summation');
 
-type QuestionType = 'addition' | 'subtraction' | 'multiplication' | 'division' |
-    'fractions' | 'decimals' | 'prime_factorization' | 'lcm' | 'hcf' |
-    'exponents' | 'scientific_notation' | 'radicals' | 'summation' | 'percentage' |
-    'logarithms';
-
-interface IQuestion {
-    _id: string,
-    author: string,
-    question_type: QuestionType
-    question_difficulty: number,
-    question_latex: string,
-    correct_answer?: string,
-    base_award?: number,
-    time_limit: number,
-    time_award?: number,
-    time_penalty?: number
-}
-
-interface IRequest {
-    query: {
-        op: string,
-        difficulty: number
-    }
-}
-
-interface IResponse {
-    status: Function,
-    json: Function,
-}
+import { IQuestion, QuestionType } from './../models/model.types';
+import { IRequest, IResponse } from './controller.types';
 
 const removeSecrets = (question) => {
     question.correct_answer = undefined;
-    question.base_award = undefined,
+    question.base_award = undefined;
     question.time_award = undefined;
     question.time_penalty = undefined;
     question.created = undefined;
@@ -68,7 +42,7 @@ const removeSecrets = (question) => {
     return question;
 };
 
-const checkForExistingQuestion = async (operation: QuestionType, difficulty: number): Promise<false | IQuestion> => {
+const checkForExistingQuestion = async (operation: QuestionType, difficulty: number): Promise<IQuestion|false> => {
     const userAnswers = await UserAnswer.find({
         question_type: operation,
         question_difficulty: difficulty
@@ -116,7 +90,7 @@ const OPERATIONS_MAP = {
 // or all such questions have already been answered by the user,
 // let Drill Bot generate a new question, persist it, then send it
 // to the user
-const fetchQuestion = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const fetchQuestion = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         const operation: string = request.query.op;
         const difficulty: number = request.query.difficulty;
@@ -142,7 +116,7 @@ const fetchQuestion = async (request: IRequest, response: IResponse) : Promise<I
     }
 };
 
-const listOperations = (request: IRequest, response: IResponse) : IResponse => {
+const listOperations = (request: IRequest, response: IResponse): IResponse => {
     const operationsDetails = Object.keys(OPERATIONS_MAP).reduce((operations, operation) => ({
         ...operations, [operation]: OPERATIONS_MAP[operation].levels
     }), {});
@@ -150,7 +124,7 @@ const listOperations = (request: IRequest, response: IResponse) : IResponse => {
     return response.json(operationsDetails);
 };
 
-const fetchTooltipMessage = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const fetchTooltipMessage = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         const [operation, difficulty]: [string, number] = [
             request.query.op,

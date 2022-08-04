@@ -2,28 +2,7 @@ export { };
 
 const mongoose = require('mongoose');
 
-type QuestionType = 'addition' | 'subtraction' | 'multiplication' | 'division' |
-    'fractions' | 'decimals' | 'prime_factorization' | 'lcm' | 'hcf' |
-    'exponents' | 'scientific_notation' | 'radicals' | 'summation' | 'percentage' |
-    'logarithms';
-
-interface IQuestion {
-    title?: string,
-    author: string,
-    description?: string,
-    question_type: QuestionType
-    question_syllabus?: string,
-    question_difficulty: number,
-    question_text?: string,
-    question_latex: string,
-    correct_answer: string,
-    base_award: number,
-    time_limit: number,
-    time_award: number,
-    time_penalty: number,
-    display_type?: string,
-    notes?: string
-}
+// import { IQuestion } from './model.types';
 
 const QuestionSchema = new mongoose.Schema({
     title: String,

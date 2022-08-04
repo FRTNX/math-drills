@@ -6,28 +6,11 @@ const Question = require('../models/question.model');
 const AbortedQuestion = require('../models/aborted.question.model');
 
 const errorHandler = require('./../helpers/db.error.handler');
-const evaluations = require('./../helpers/evaluations'); // use this eventually
+const evaluations = require('./../helpers/evaluations');
 
-interface IRequest {
-    query?: {
-        user_id?: string,
-        question_id?: string,
-        question_type?: string,
-    },
-    body?: {
-        user_id?: string
-        question_id?: string,
-        question_type: string,
-        time_taken?: number
-    }
-}
+import { IRequest, IResponse } from './controller.types';
 
-interface IResponse {
-    status: Function,
-    json: Function,
-}
-
-const saveUserAnswer = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const saveUserAnswer = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         console.log('Got user answer: ', request.body)
         const question = await Question.findOne({ _id: request.body.question_id });
@@ -95,12 +78,12 @@ const saveUserAnswer = async (request: IRequest, response: IResponse) : Promise<
     }
 };
 
-const abortQuestion = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const abortQuestion = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         const userId = request.query.user_id;
         const questionId = request.query.question_id;
 
-        const question = await Question.findOne({ _id: request.query.question_id });
+        const question = await Question.findOne({ _id: questionId });
 
         if (!question) {
             throw new Error('Question not found');
@@ -108,7 +91,7 @@ const abortQuestion = async (request: IRequest, response: IResponse) : Promise<I
 
         try {
             const abortedQuestion = new AbortedQuestion({
-                user_id: request.query.user_id,
+                user_id: userId,
                 question_id: question._id,
                 question_type: question.question_type
             });
@@ -117,8 +100,6 @@ const abortQuestion = async (request: IRequest, response: IResponse) : Promise<I
         } catch (error) {
             console.log(error);
         }
-
-        const abortedQuestions = await AbortedQuestion.find({ user_id: request.query.user_id })
 
         return response.status(200).json({ result: 'SUCCESS' });
     } catch (error) {
@@ -129,7 +110,7 @@ const abortQuestion = async (request: IRequest, response: IResponse) : Promise<I
     }
 };
 
-const fetchUserAnswers = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const fetchUserAnswers = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         let query = { user_id: request.query.user_id, question_type: '' };
 

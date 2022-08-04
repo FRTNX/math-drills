@@ -1,31 +1,14 @@
 export { };
 
+const { config } = require('./../../config/config');
 const User = require('../models/user.model');
+
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
-const { config } = require('./../../config/config');
 
-interface IRequest {
-    body: {
-        email: string,
-        password: string
-    },
-    profile?: {
-        _id: string
-    },
-    auth?: {
-        _id: string
-    }
-}
+import { IRequest, IResponse } from './controller.types';
 
-interface IResponse {
-    status: Function,
-    json: Function,
-    cookie: Function,
-    clearCookie: Function
-}
-
-const signin = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const signin = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         let user = await User.findOne({ "email": request.body.email });
 
@@ -42,14 +25,14 @@ const signin = async (request: IRequest, response: IResponse) : Promise<IRespons
         const token = jwt.sign({ _id: user._id }, config.jwtSecret);
         response.cookie("t", token, { expire: Number(new Date()) + 9999 });
 
-        return response.json({ token, user: {_id: user._id, name: user.name, email: user.email}});
+        return response.json({ token, user: { _id: user._id, name: user.name, email: user.email } });
     } catch (err) {
         console.log(err);
         return response.status('401').json({ error: "Could not sign in" });
     }
 };
 
-const signout = (request: IRequest, response: IResponse) => {
+const signout = (request: IRequest, response: IResponse): IResponse => {
     response.clearCookie("t");
     return response.status('200').json({
         message: "signed out"
@@ -61,7 +44,7 @@ const requireSignin = expressJwt({
     userProperty: 'auth'
 });
 
-const hasAuthorization = (request: IRequest, response: IResponse, next: Function) => {
+const hasAuthorization = (request: IRequest, response: IResponse, next: Function): IResponse|Function => {
     const authorized = request.profile && request.auth && request.profile._id == request.auth._id;
     if (!(authorized)) {
         return response.status('403').json({

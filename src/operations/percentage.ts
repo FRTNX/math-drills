@@ -3,18 +3,7 @@ export { };
 const Question = require('../models/question.model');
 const random = require('../helpers/random');
 
-interface IQuestion {
-    author: string,
-    question_type: string,
-    question_difficulty: number,
-    question_latex: string,
-    correct_answer: string | number,
-    time_limit: number,
-    base_award: number,
-    time_award: number,
-    time_penalty: number,
-    display_type: string
-}
+import { IQuestion } from './../models/model.types';
 
 const DIFFICULTY_PROFILES = {
     0: {
@@ -29,7 +18,7 @@ const DIFFICULTY_PROFILES = {
     },
 };
 
-const percentage = async (operation: string, difficulty: number) : Promise<IQuestion> => {
+const percentage = async (operation: string, difficulty: number): Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
     const variables: Array<string> = ['rate', 'base', 'percentage']; // obfuscatable values

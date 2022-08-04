@@ -5,17 +5,7 @@ const random = require('../helpers/random');
 
 const { generateQuestionLatex } = require('../helpers/evaluations');
 
-interface IQuestion {
-    author: string,
-    question_type: string,
-    question_difficulty: number,
-    question_latex: string,
-    correct_answer: string | number,
-    time_limit: number,
-    base_award: number,
-    time_award: number,
-    time_penalty: number
-};
+import { IQuestion } from './../models/model.types';
 
 const DIFFICULTY_PROFILES = {
     0: {
@@ -97,7 +87,7 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const exponents = async (operation: string, difficulty: number) : Promise<IQuestion> => {
+const exponents = async (operation: string, difficulty: number): Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
     const terms: Array<number> = [];

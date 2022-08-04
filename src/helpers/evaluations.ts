@@ -2,15 +2,7 @@ export { };
 
 const random = require('../helpers/random');
 
-type QuestionType = 'addition' | 'subtraction' | 'multiplication' | 'division' |
-    'fractions' | 'decimals' | 'prime_factorization' | 'lcm' | 'hcf' |
-    'exponents' | 'scientific_notation' | 'radicals' | 'summation' | 'percentage' |
-    'logarithms';
-
-interface IQuestion {
-    question_type: QuestionType,
-    correct_answer: string
-}
+import { IQuestion } from './../models/model.types';
 
 interface IUserAnswer {
     user_answer: string
@@ -28,7 +20,7 @@ interface IEvaluation {
 }
 
 // responsible for general and custom evaluations for all question types.
-const evaluateAnswer = (question: IQuestion, answer: IUserAnswer) : IEvaluation => {
+const evaluateAnswer = (question: IQuestion, answer: IUserAnswer): IEvaluation => {
     if (question.question_type == 'prime_factorization') {
         const userAnswer = answer.user_answer.match(/\d+/g).map((prime) => Number(prime)).sort();
         const formattedCorrectAnswer = JSON.parse(question.correct_answer).join('\\cdot');
@@ -56,7 +48,7 @@ const evaluateAnswer = (question: IQuestion, answer: IUserAnswer) : IEvaluation 
  * where a questions terms are themselves LaTeX expressions.
  */
 const generateQuestionLatex = (operator: string, terms: Array<number>,
-    formattedTerms: Array<string> = [], options: IOptions = {}) : [string, number] => {
+    formattedTerms: Array<string> = [], options: IOptions = {}): [string, number] => {
     let questionLatex: string;
     let correctAnswer: number;
 

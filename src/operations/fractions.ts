@@ -4,19 +4,7 @@ const Question = require('../models/question.model');
 const random = require('../helpers/random');
 
 const { generateQuestionLatex } = require('../helpers/evaluations');
-
-interface IQuestion {
-    author: string,
-    question_type: string,
-    question_difficulty: number,
-    question_latex: string,
-    correct_answer: string | number,
-    time_limit: number,
-    base_award: number,
-    time_award: number,
-    time_penalty: number
-}
-
+import { IQuestion } from './../models/model.types';
 
 const DIFFICULTY_PROFILES = {
     0: {
@@ -43,7 +31,7 @@ const DIFFICULTY_PROFILES = {
     }
 };
 
-const fractions = async (operation: string, difficulty: number) : Promise<IQuestion> => {
+const fractions = async (operation: string, difficulty: number): Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
     const numberOfFractions: number = difficultyProfile.numberOfFractions

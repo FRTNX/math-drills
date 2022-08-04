@@ -5,27 +5,12 @@ const UserAnswer = require('../models/user.answer.model');
 
 const AbortedQuestion = require('../models/aborted.question.model');
 
-const { populateRandomizedData } = require('../controllers/user.controller');
-
 const errorHandler = require('./../helpers/db.error.handler');
 
-interface IRequest {
-    query?: {
-        user_id?: string,
-        question_id?: string,
-        question_type?: string,
-        limit?: number,
-        op?: string
-    }
-}
+import { IRequest, IResponse } from './controller.types';
 
-interface IResponse {
-    status: Function,
-    json: Function
-}
-
-const fetchRatingProfile = (userRatings: Array<number>, isActiveOp: boolean) => {
-    if (!isActiveOp) {
+const fetchRatingProfile = (userRatings: Array<number>, activeOperation: boolean) => {
+    if (!activeOperation) {
         return { name: 'zygote', color: 'default', graphOptions: ['bar2'] }
     }
 
@@ -44,12 +29,12 @@ const fetchRatingProfile = (userRatings: Array<number>, isActiveOp: boolean) => 
     // todo: add more, adjust conditions, move to separate file (rating.handler.js)
 };
 
-const fetchRatingHistory = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const fetchRatingHistory = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         if (!request.query.user_id || !request.query.question_type) {
             throw new Error('Invalid rating request');
         }
-        
+
         let query = {
             user_id: request.query.user_id,
             question_type: request.query.question_type
@@ -65,7 +50,7 @@ const fetchRatingHistory = async (request: IRequest, response: IResponse) : Prom
             .limit(limit)
             .exec();
 
-        const isActiveOp: boolean = await UserAnswer.exists({ ...query, user_answer: {'$ne': 'randomized' }});
+        const isActiveOp: boolean = await UserAnswer.exists({ ...query, user_answer: { '$ne': 'randomized' } });
 
         const userRating = userAnswers.map((r) => r.rating);
         const ratingProfile = fetchRatingProfile(userRating, isActiveOp);
@@ -86,7 +71,7 @@ const fetchRatingHistory = async (request: IRequest, response: IResponse) : Prom
     }
 };
 
-const fetchUserStats = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const fetchUserStats = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         const userId: string = request.query.user_id;
         const user = await User.findOne({ _id: userId }).select('name');
@@ -171,7 +156,7 @@ const fetchOpGraphData = async (userId: string, questionType: string) => {
         .limit(11)
         .exec();
 
-    const isActiveOp: boolean = await UserAnswer.exists({ ...query, user_answer: {'$ne': 'randomized' }});
+    const isActiveOp: boolean = await UserAnswer.exists({ ...query, user_answer: { '$ne': 'randomized' } });
 
     const ratingValues = questionRatings.map((r) => r.rating).reverse();
     const ratingProfile = fetchRatingProfile(ratingValues, isActiveOp);
@@ -199,8 +184,8 @@ const formatTime = (millis: number): string => {
 
     // s
     if (millis > 1000 && millis < 1000 * 60) {
-        let sec = Math.round(millis /1000)
-        let ms =  Number(`${millis % 1000}`.slice(0, 2));
+        let sec = Math.round(millis / 1000)
+        let ms = Number(`${millis % 1000}`.slice(0, 2));
 
         if (Number(ms) > 60) {
             sec += 1;
@@ -230,7 +215,7 @@ const formatTime = (millis: number): string => {
     // y
 };
 
-const longestPositiveTrend = async (numArray: Array<number>) : Promise<number> => {
+const longestPositiveTrend = async (numArray: Array<number>): Promise<number> => {
     const result = { streak: 0, count: 0, prevNum: 0 };
     numArray.map((value) => {
         if (value > result.prevNum) {
@@ -250,7 +235,7 @@ const longestPositiveTrend = async (numArray: Array<number>) : Promise<number> =
     return result.streak;
 };
 
-const longestNegativeTrend = async (numArray: Array<number>) : Promise<number> => {
+const longestNegativeTrend = async (numArray: Array<number>): Promise<number> => {
     const result = { streak: 0, count: 0, prevNum: 0 };
     numArray.map((value) => {
         if (value < result.prevNum) {
@@ -270,23 +255,23 @@ const longestNegativeTrend = async (numArray: Array<number>) : Promise<number> =
     return result.streak;
 };
 
-const fetchSpeedStats = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const fetchSpeedStats = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         const query = {
             user_id: request.query.user_id,
             question_type: request.query.op
         };
-    
+
         const timePerQuestion = await UserAnswer.find(query)
             .select('time_taken')
             .sort('-created')
             .exec();
-    
+
         const speedValues = timePerQuestion.map((question) => question.time_taken).reverse();
 
         const averageSpeed: number = speedValues.reduce((partSum, value) => partSum + Number(value), 0) / speedValues.length;
         console.log('average speed: ', averageSpeed)
-    
+
         const result = {
             operation: request.query.op,
             currentRating: formatTime(averageSpeed),
@@ -329,7 +314,7 @@ const fetchOpStats = async (userId: string, questionType: string) => {
     const highestRating: number = Math.max(...ratingValues);
     const lowestRating: number = Math.min(...ratingValues);
 
-    const [correctAnswerStreak, wrongAnswerStreak] : [number, number] = await Promise.all([
+    const [correctAnswerStreak, wrongAnswerStreak]: [number, number] = await Promise.all([
         longestPositiveTrend(ratingValues),
         longestNegativeTrend(ratingValues)
     ]);
@@ -350,7 +335,7 @@ const fetchOpStats = async (userId: string, questionType: string) => {
     };
 };
 
-const compileStats = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const compileStats = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         const userId: string = request.query.user_id;
         const op: string = request.query.op;
@@ -380,7 +365,7 @@ const compileStats = async (request: IRequest, response: IResponse) : Promise<IR
     }
 };
 
-const fetchActiveOps = async (request: IRequest, response: IResponse) : Promise<IResponse> => {
+const fetchActiveOps = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         const result = await UserAnswer.find({ user_id: request.query.user_id })
             .distinct('question_type');

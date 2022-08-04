@@ -3,15 +3,7 @@ export { };
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 
-interface IUser {
-    name: string,
-    level_details?: Array<any>,
-    email: string,
-    hashed_password: string,
-    salt: string,
-    about: string,
-    photo: Buffer
-}
+// import { IUser } from './model.types';
 
 const UserSchema = new mongoose.Schema({
     name: {

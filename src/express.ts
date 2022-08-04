@@ -20,15 +20,7 @@ const express = require('express');
 
 const app = express();
 
-interface IRequest {
-    method: string,
-    url: string
-}
-
-interface IResponse {
-    status: Function,
-    json: Function,
-}
+import { IRequest, IResponse } from './controllers/controller.types';
 
 const logit = (request: IRequest, response: IResponse, next: Function) => {
     console.log('Request recieved: ', request.method, request.url);
@@ -40,8 +32,6 @@ app.use(logit);
 app.use(express.json({ limit: config.request.limit }));
 app.use(express.urlencoded());
 
-// app.use(bodyParser.json())
-// app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(compress())
 app.use(helmet())
@@ -54,8 +44,8 @@ app.use('/', authRoutes)
 app.use('/', opRoutes)
 
 
-app.use('*', (request: IRequest, response: IResponse, next: Function) : IResponse => {
-    return response.status(404).json({ message: 'Resource not found'});
+app.use('*', (request: IRequest, response: IResponse, next: Function): IResponse => {
+    return response.status(404).json({ message: 'Resource not found' });
 });
 
 module.exports = app;
