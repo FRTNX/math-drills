@@ -13,6 +13,13 @@ Military-style drills, for math.
 Math Drills offers a near infinite number of questions to sharpen the mind on. Currently most common math operations are supported, and more are constantly being added. Eventually the drills will encompass all of mathematics at every level.
 
 ## Features
+Built-in Terminal
+[![Math Drills Terminal](src/assets/images/readme/md2.gif?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/md2.gif)
+
+Math Drills features a built in terminal. This terminal can be used to talk to DrillBot, the resident AI. More terminal features are currently being built, such as community channels that mimic irc, along with actual irc integrations. The terminal will typically be the main social feature as users will be able to have chats and ask questions through it.
+
+So as to provide ease of access the terminal may be accessed from both the drills and the stats page or wherever the below icon appears, which allows the terminal to be expanded or hidden:
+[![Math Drills Terminal 2](src/assets/images/readme/md3.gif?raw=true "Math Drills Terminal")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/md3.gif)
 ### Hints
 To get a hint about the current question simply hover your mouse over it. On mobile you can hold the area on the right hand side of the question to the same effect. This displays a unique tooltip for every operation and every level within each operation.
 
@@ -48,5 +55,7 @@ Some features are already in the pipeline to give more life to this web applicat
 
 ## Contributions
 Contributions are welcome. I've made the backend code very modular so that new operations can be added with minimal code and without need to update the frontend. That said, I have sinned and will soon repent: (sin #1) All the code is written in Node.js and eventually needs to be converted to TypeScript. I figured I'd build as much I can then write annotations later. As the codebase has grown I now see the error of my ways. (sin #2) For commissioned projects I'm always Mr. TDD. With side projects however... At  the time of writing the codebase is generally bug-free, having explored all features rigorously. Still, there are no tests. I'll be using the mocha-sinon-chai test suite for this task. Test coverage for all the code I've written is my responsibility so I won't be accepting any contributions there. However all new proposed features must be fully tested.
+
+### Update: TypeScript conversion complete.
 
 Developer contact: frtnx@protonmail.com

@@ -15,12 +15,13 @@ const opRoutes = require('./routes/operations.routes');
 const userAnswerRoutes = require('./routes/user.answer.routes');
 
 const userStatsRoutes = require('./routes/user.stats.routes');
+const terminalRoutes = require('./routes/terminal.routes');
+
+import { IRequest, IResponse } from './controllers/controller.types';
 
 const express = require('express');
 
 const app = express();
-
-import { IRequest, IResponse } from './controllers/controller.types';
 
 const logit = (request: IRequest, response: IResponse, next: Function) => {
     console.log('Request recieved: ', request.method, request.url);
@@ -39,6 +40,7 @@ app.use(cors())
 
 app.use('/', userAnswerRoutes);
 app.use('/', userStatsRoutes);
+app.use('/', terminalRoutes);
 app.use('/', userRoutes);
 app.use('/', authRoutes)
 app.use('/', opRoutes)

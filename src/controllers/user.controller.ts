@@ -7,13 +7,15 @@ const UserAnswer = require('../models/user.answer.model');
 
 const Question = require('../models/question.model');
 
-const extend = require('lodash/extend');
+const random = require('../helpers/random');
 const errorHandler = require('./../helpers/db.error.handler');
 
 const formidable = require('formidable');
-const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
-const random = require('../helpers/random');
+const fs = require('fs');
+const extend = require('lodash/extend');
+
 const profileImage = fs.readFileSync('./src/assets/images/p3.jpg');
 
 import { IRequest, IResponse } from './controller.types';
@@ -117,6 +119,39 @@ const create = async (request: IRequest, response: IResponse): Promise<IResponse
         await populateRandomizedData(user._id);
 
         return response.status(200).json({ message: 'SUCCESS' });
+    } catch (error) {
+        console.log(error)
+        return response.status(400).json({
+            error: errorHandler.getErrorMessage(error)
+        });
+    }
+};
+
+const anonymousLogin = async (request: IRequest, response: IResponse): Promise<IResponse> => {
+    try {
+        const anonymousUsers: number = await User.count({
+            name: 'Anonymous User',
+            password: 'anonymous1'
+        });
+
+        const user = new User({
+            name: 'Anonymous User',
+            password: 'anonymous1',
+            email: `user${anonymousUsers + 1}@anonymous.com`
+        });
+
+        console.log('created anonymous user: ', user)
+
+        await user.save();
+
+        await populateRandomizedData(user._id);
+
+        const token: string = jwt.sign({ _id: user._id }, config.jwtSecret);
+        response.cookie("t", token, { expire: Number(new Date()) + 9999 });
+
+        console.log('token: ', token)
+
+        return response.json({ token, user: { _id: user._id, name: user.name, email: user.email } });
     } catch (error) {
         console.log(error)
         return response.status(400).json({
@@ -258,5 +293,6 @@ module.exports = {
     photo,
     defaultPhoto,
     userCount,
-    populateOps
+    populateOps,
+    anonymousLogin
 };

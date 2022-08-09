@@ -8,7 +8,8 @@ export interface IRequest {
         question_id?: string,
         question_type?: string,
         limit?: number,
-        key?: string
+        key?: string,
+        input?: string
     },
     body: {
         user_id?: string,
