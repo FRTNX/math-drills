@@ -17,6 +17,8 @@ const userAnswerRoutes = require('./routes/user.answer.routes');
 const userStatsRoutes = require('./routes/user.stats.routes');
 const terminalRoutes = require('./routes/terminal.routes');
 
+const channelRoutes = require('./routes/channel.routes');
+
 import { IRequest, IResponse } from './controllers/controller.types';
 
 const express = require('express');
@@ -41,6 +43,7 @@ app.use(cors())
 app.use('/', userAnswerRoutes);
 app.use('/', userStatsRoutes);
 app.use('/', terminalRoutes);
+app.use('/', channelRoutes);
 app.use('/', userRoutes);
 app.use('/', authRoutes)
 app.use('/', opRoutes)

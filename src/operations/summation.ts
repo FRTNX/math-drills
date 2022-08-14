@@ -14,8 +14,7 @@ const DIFFICULTY_PROFILES = {
         baseAward: [5, 8],
         timeAward: 1,
         timePenalty: 3,
-        tooltipIntro: 'This op is so you dont think Math Drills is soft. ' +
-            'More complex operators on the way.'
+        tooltipIntro: 'Simple and fun summation drills. More difficult levels on the way. '
     }
 };
 

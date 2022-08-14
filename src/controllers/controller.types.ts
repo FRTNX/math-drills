@@ -9,7 +9,10 @@ export interface IRequest {
         question_type?: string,
         limit?: number,
         key?: string,
-        input?: string
+        input?: string,
+        channel_id?: string,
+        anchor_message_id?: string,
+        msg_count?: number
     },
     body: {
         user_id?: string,

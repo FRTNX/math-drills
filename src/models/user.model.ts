@@ -11,6 +11,9 @@ const UserSchema = new mongoose.Schema({
         trim: true,
         required: 'First name is required'
     },
+    alias: {
+        type: String
+    },
     level_details: [],
     email: {
         type: String,

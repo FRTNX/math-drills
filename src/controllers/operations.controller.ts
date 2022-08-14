@@ -1,10 +1,10 @@
 export { };
 
-
 const Question = require('../models/question.model');
 const UserAnswer = require('../models/user.answer.model');
 
 const errorHandler = require('./../helpers/db.error.handler');
+const { config } = require('./../../config/config');
 
 const addition = require('../operations/addition');
 const subtraction = require('../operations/subtraction');
@@ -28,6 +28,8 @@ const exponents = require('../operations/exponents');
 const radicals = require('../operations/radicals');
 
 const summation = require('../operations/summation');
+
+const got = require('got');
 
 import { IQuestion, QuestionType } from './../models/model.types';
 import { IRequest, IResponse } from './controller.types';
@@ -92,6 +94,9 @@ const OPERATIONS_MAP = {
 // to the user
 const fetchQuestion = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
+        // ping DrillBot, in case asleep
+        got(`${config.drillBotServer}?text=ping&&sessionId=1`);
+
         const operation: string = request.query.op;
         const difficulty: number = request.query.difficulty;
 

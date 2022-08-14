@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "module": "commonjs",
+        "downlevelIteration": true
     },
     "files": [
         "./src/operations/addition.ts",
@@ -22,6 +23,8 @@
         "./src/models/question.model.ts",
         "./src/models/user.answer.model.ts",
         "./src/models/user.model.ts",
+        "./src/models/channel.model.ts",
+        "./src/models/channel.message.model.ts",
         "./src/models/user.preference.model.ts",
         "./src/helpers/db.error.handler.ts",
         "./src/helpers/evaluations.ts",
@@ -31,11 +34,16 @@
         "./src/controllers/user.answer.controller.ts",
         "./src/controllers/user.controller.ts",
         "./src/controllers/user.stats.controller.ts",
+        "./src/controllers/terminal.controller.ts",
+        "./src/controllers/channel.controller.ts",
+        "./src/controllers/channel.message.controller.ts",
         "./src/routes/auth.routes.ts",
         "./src/routes/operations.routes.ts",
         "./src/routes/user.answer.routes.ts",
         "./src/routes/user.routes.ts",
         "./src/routes/user.stats.routes.ts",
+        "./src/routes/terminal.routes.ts",
+        "./src/routes/channel.routes.ts",
         "./src/express.ts",
         "./src/server.ts",
         "./config/config.ts"

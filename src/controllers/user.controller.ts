@@ -149,8 +149,6 @@ const anonymousLogin = async (request: IRequest, response: IResponse): Promise<I
         const token: string = jwt.sign({ _id: user._id }, config.jwtSecret);
         response.cookie("t", token, { expire: Number(new Date()) + 9999 });
 
-        console.log('token: ', token)
-
         return response.json({ token, user: { _id: user._id, name: user.name, email: user.email } });
     } catch (error) {
         console.log(error)
