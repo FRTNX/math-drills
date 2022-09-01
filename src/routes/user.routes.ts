@@ -13,6 +13,12 @@ router.route('/api/v0/users')
 router.route('/api/v0/user/randomized')
     .put(userCtrl.populateOps);
 
+router.route('/api/v0/user/aliases')
+    .put(userCtrl.retrofitAliases);
+
+router.route('/api/v0/user/alias')
+    .get(userCtrl.fetchUserAlias);
+
 router.route('/count')
     .get(userCtrl.userCount);
 

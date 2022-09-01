@@ -1,6 +1,8 @@
 export { };
 
 const Channel = require('../models/channel.model');
+const User = require('../models/user.model');
+
 const errorHandler = require('./../helpers/db.error.handler');
 
 
@@ -51,8 +53,6 @@ const unPublishChannel = async (request, response) => {
 
 const listChannels = async () => {
     const channels = await Channel.find({ visibility: 'public' });
-    console.log('found public channels: ', channels);
-
     return channels;
 };
 
@@ -66,6 +66,72 @@ const listAllChannels = async (request, response) => {
             error: errorHandler.getErrorMessage(error)
         });
     }
+};
+
+const isAdmin = async (userId, channelId) => {
+    const user = await User.findOne({ _id: userId }).select('alias');
+
+    const channel = await Channel.findOne({ channel_id: channelId });
+
+    const channelOpUserId = channel.channel_op.toString();
+
+    // todo: return ... || user.is_admin;
+    return channelOpUserId === userId || user.alias === 'frtnx';
+};
+
+const changeChannelOwnership = async (userId: string, channelId: string, passphrase: string) => {
+    const channel = await Channel.findOne({ channel_id: channelId });
+
+    if (!channel.chown_enabled) {
+        return { error: 'chown not enabled for this channel.' };
+    };
+
+    if (channel.passphrase === passphrase) {
+        await Channel.findOneAndUpdate({ channel_id: channelId }, { channel_op: userId });
+        return { message: 'SUCCESS' };
+    }
+
+    return { error: 'invalid credentials.' };
+};
+
+const updatePassphrase = async (userId: string, channelId: string, oldPassphrase: string, newPassphrase: string) => {
+    const channel = await Channel.findOne({ channel_id: channelId });
+
+    const channelOpUserId = channel.channel_op.toString();
+
+    if (channelOpUserId !== userId || channel.passphrase !== oldPassphrase) {
+        return { error: 'unauthorized.' };
+    }
+
+    await Channel.findOneAndUpdate({ channel_id: channelId }, { passphrase: newPassphrase });
+
+    return { message: 'SUCCESS' };
+}
+
+const enableChown = async (userId: string, channelId: string, passphrase: string) => {
+    const channel = await Channel.findOne({ channel_id: channelId });
+
+    const channelOpUserId = channel.channel_op.toString();
+
+    if (channelOpUserId === userId) {
+        await Channel.findOneAndUpdate({ channel_id: channelId }, { chown_enabled: true, passphrase });
+        return { message: 'SUCCESS' };
+    }
+
+    return { error: 'unauthorized.' };
+};
+
+const disableChown = async (userId: string, channelId: string, passphrase: string) => {
+    const channel = await Channel.findOne({ channel_id: channelId });
+
+    const channelOpUserId = channel.channel_op.toString();
+
+    if (channelOpUserId === userId && channel.passphrase === passphrase) {
+        await Channel.findOneAndUpdate({ channel_id: channelId }, { chown_enabled: false, passphrase: '' });
+        return { message: 'SUCCESS' };
+    }
+
+    return { error: 'invalid credentials.' };
 };
 
 const addChannelMember = async (userId: string, channelId: string) => {
@@ -95,5 +161,10 @@ module.exports = {
     listChannelMembers,
     addChannelMember,
     publishChannel,
-    unPublishChannel
+    unPublishChannel,
+    isAdmin,
+    changeChannelOwnership,
+    enableChown,
+    disableChown,
+    updatePassphrase
 };

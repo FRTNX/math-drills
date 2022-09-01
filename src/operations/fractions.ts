@@ -43,11 +43,29 @@ const fractions = async (operation: string, difficulty: number): Promise<IQuesti
         const numerator: number = random(...difficultyProfile.numeratorRange);
         const denominator: number = random(...difficultyProfile.denominatorRange);
 
-        terms.push([numerator, denominator]);
+        denominator === 0
+            ? terms.push([numerator, 1])
+            : terms.push([numerator, denominator]);
     }
 
-    const formattedFractions = terms.map((fraction) => {
+    const formattedFractions = terms.map((fraction, index) => {
         const [numerator, denominator] = fraction;
+
+        if (numerator > denominator) {
+            const mixedInt: number = Math.trunc(numerator / denominator);
+            const newNumerator: number = numerator % denominator;
+
+            let result: string;
+
+            mixedInt === 0 || newNumerator === 0
+                ? result = `\\frac{${numerator}}{${denominator}}`
+                : index === 0
+                    ? result = `${mixedInt}\\frac{${newNumerator}}{${denominator}}`
+                    : result = `\\left(${mixedInt}\\frac{${newNumerator}}{${denominator}}\\right)`;
+
+            return result;
+        }
+
         return `\\frac{${numerator}}{${denominator}}`;
     });
 
@@ -57,9 +75,10 @@ const fractions = async (operation: string, difficulty: number): Promise<IQuesti
         random(0, difficultyProfile.operators.length)
     ];
 
-    const options = { division: { styles: ['default'] }};
+    const options = { division: { styles: ['default'] }, multiplication: ['default', 'dot'] };
     const [questionLatex, correctAnswer]: [number, string] = generateQuestionLatex(
-        operator, decimalFractions, formattedFractions, options);
+        operator, decimalFractions, formattedFractions, options
+    );
 
     const question = new Question({
         author: 'DrillBot',
@@ -98,8 +117,6 @@ const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
     const message: string = `${difficultyProfile.tooltipIntro || ''}` +
-        // `Numerator range: ${difficultyProfile.numeratorRange.join('-')}\n` +
-        // `Denominator range: ${difficultyProfile.denominatorRange.join('-')}\n` +
         `Express the answer as a decimal rounded to 2 decimal places. ` +
         `Bonus award time limit: ${difficultyProfile.timeLimit / 1000} seconds.`
 

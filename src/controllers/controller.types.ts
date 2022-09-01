@@ -20,7 +20,8 @@ export interface IRequest {
         password?: string,
         question_id?: string,
         question_type: string,
-        time_taken?: number
+        time_taken?: number,
+        alias?: string
     },
     profile?: {
         _id?: string,

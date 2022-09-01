@@ -11,6 +11,9 @@ interface IUserAnswer {
 interface IOptions {
     division?: {
         styles?: Array<string>
+    },
+    multiplication?: {
+        styles?: Array<string>
     }
 }
 
@@ -58,7 +61,6 @@ const generateQuestionLatex = (operator: string, terms: Array<number>,
             ? formattedTerms.join(' + ')
             : terms.join(' + ');
 
-        console.log('LaTeX: ', questionLatex)
         correctAnswer = terms.reduce((partSum, value) => partSum + value, 0);
     }
 
@@ -75,7 +77,10 @@ const generateQuestionLatex = (operator: string, terms: Array<number>,
     if (operator === 'multiplication') {
         correctAnswer = terms.reduce((partProd, value) => partProd * value, 1);
 
-        let styles: Array<string> = ['default', 'dot', 'brackets'];
+        let styles: Array<string> = options.multiplication
+            ? options.division.styles
+            : ['default', 'dot', 'brackets'];
+
         const style: string = styles[random(0, styles.length)];
 
         if (style == 'default') {

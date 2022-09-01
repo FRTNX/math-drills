@@ -101,11 +101,11 @@ const exponents = async (operation: string, difficulty: number): Promise<IQuesti
 
     for (let i = 0; i < numberOfTerms; i++) {
         if (difficultyProfile.override) {
-            // generates a decimal ranging from 0.01 to 9.99
-            const multiplicand: number = Math.floor(Math.random() * (1000 - 10) + 10) / 100;
-
             if (difficultyProfile.override === 'SCIENTIFIC_NOTATION') {
                 const exponent: number = random(...difficultyProfile.exponents);
+
+                // generates a decimal ranging from 0.01 to 9.99
+                const multiplicand: number = Math.floor(Math.random() * (1000 - 10) + 10) / 100;
 
                 terms.push(multiplicand * 10 ** exponent);
                 formattedTerms.push(`${multiplicand} \\times 10^{${exponent}}`);
@@ -129,7 +129,7 @@ const exponents = async (operation: string, difficulty: number): Promise<IQuesti
             exponent = difficultyProfile.exponents[random(1, difficultyProfile.exponents.length)];
         }
 
-        // holds the obfuscated value
+        // holds the decimal value of fractional exponents
         let exponentValue: number;
 
         if (exponent === 'fraction') {
@@ -155,6 +155,7 @@ const exponents = async (operation: string, difficulty: number): Promise<IQuesti
     }
 
     let questionLatex: string;
+    
     let correctAnswer: number;
 
     if (terms.length === 1) {
@@ -166,7 +167,7 @@ const exponents = async (operation: string, difficulty: number): Promise<IQuesti
         const operator: string = difficultyProfile.operators[
             random(0, difficultyProfile.operators.length)
         ];
-    
+
         const result: [string, number] = generateQuestionLatex(operator, terms, formattedTerms);
         questionLatex = result[0];
         correctAnswer = result[1];

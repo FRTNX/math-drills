@@ -3,8 +3,6 @@ export { };
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 
-// import { IUser } from './model.types';
-
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -12,7 +10,8 @@ const UserSchema = new mongoose.Schema({
         required: 'First name is required'
     },
     alias: {
-        type: String
+        type: String,
+        unique: 'alias already exists.'
     },
     level_details: [],
     email: {
@@ -21,19 +20,27 @@ const UserSchema = new mongoose.Schema({
         unique: 'Email already exists',
         match: [/.+\@.+\..+/, 'Please fill a valid email address'],
         required: 'Email is required'
+    },  
+    is_admin: {
+        type: Boolean,
+        default: false
+    },
+    is_anonymous: {
+        type: Boolean,
+        required: 'User anonymity status required'
+    },
+    photo: {
+        data: Buffer,
+        contentType: String
     },
     hashed_password: {
         type: String,
         required: "Password is required"
     },
-    salt: String,    
+    salt: String, 
     about: {
         type: String,
         trim: true
-    },
-    photo: {
-        data: Buffer,
-        contentType: String
     },
     created: {
         type: Date,

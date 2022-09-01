@@ -13,6 +13,7 @@ const ChannelSchema = new Schema({
         unique: 'channel already exists',
         required: 'channel id is required.'
     },
+    passphrase: String,
     visibility: {
         type: String,
         required: 'Visibility setting is required'
@@ -22,6 +23,10 @@ const ChannelSchema = new Schema({
     },
     welcome_message: {
         type: String
+    },
+    chown_enabled: {
+        type: Boolean,
+        default: false
     },
     created: {
         type: Date,

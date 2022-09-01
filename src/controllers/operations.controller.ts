@@ -94,7 +94,7 @@ const OPERATIONS_MAP = {
 // to the user
 const fetchQuestion = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
-        // ping DrillBot, in case asleep
+        // auxiliary: ping drillbot
         got(`${config.drillBotServer}?text=ping&&sessionId=1`);
 
         const operation: string = request.query.op;

@@ -18,6 +18,7 @@ const extend = require('lodash/extend');
 
 const profileImage = fs.readFileSync('./src/assets/images/p3.jpg');
 
+import { NoUnusedFragmentsRule } from 'graphql';
 import { IRequest, IResponse } from './controller.types';
 
 interface IRandomizedAnswer {
@@ -111,9 +112,24 @@ const populateRandomizedData = async (userId: string, operation?: string) => {
     return { [userId]: result.filter((r) => !r === false) };
 };
 
+/**
+ * Regular user registration
+ * @param request 
+ * @param response 
+ * @returns 
+ */
 const create = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         const user = new User(request.body);
+
+        if (!request.body.alias) {
+            const userId: string = user._id.toString();
+            const defaultAlias: string = userId.slice(userId.length - 5);
+            user.alias = defaultAlias;
+        }
+
+        user.is_anonymous = false;
+
         await user.save();
 
         await populateRandomizedData(user._id);
@@ -127,6 +143,28 @@ const create = async (request: IRequest, response: IResponse): Promise<IResponse
     }
 };
 
+// meant to run once to retrofit default aliases to pre-existing users
+const retrofitAliases = async (request: IRequest, response: IResponse): Promise<IResponse> => {
+    try {
+        const users = await User.find({}).select('_id allias');
+
+        const aliaslessUsers = users.filter((user) => !user.alias);
+
+        await Promise.all(aliaslessUsers.map(async (user: any) => {
+            const userId = user._id.toString();
+            const defaultAlias = userId.slice(userId.length - 5);
+            await User.findOneAndUpdate({ _id: user._id }, { alias: defaultAlias });
+        }));
+
+        return response.status(200).json({ message: 'SUCCESS' });
+    } catch (error) {
+        console.log(error)
+        return response.status(400).json({
+            error: errorHandler.getErrorMessage(error)
+        });
+    }
+}
+
 const anonymousLogin = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         const anonymousUsers: number = await User.count({
@@ -137,8 +175,13 @@ const anonymousLogin = async (request: IRequest, response: IResponse): Promise<I
         const user = new User({
             name: 'Anonymous User',
             password: 'anonymous1',
-            email: `user${anonymousUsers + 1}@anonymous.com`
+            email: `user${anonymousUsers + 1}@anonymous.com`,
+            is_anonymous: true
         });
+
+        const userId: string = user._id.toString();
+        const defaultAlias: string = userId.slice(userId.length - 5);
+        user.alias = defaultAlias;
 
         console.log('created anonymous user: ', user)
 
@@ -198,7 +241,7 @@ const populateOps = async (request: IRequest, response: IResponse): Promise<IRes
 };
 
 const userByID = async (request: IRequest,
-    response: IResponse,next: Function, id: string): Promise<IResponse|void> => {
+    response: IResponse, next: Function, id: string): Promise<IResponse | void> => {
     try {
         let user = await User.findById(id).populate('following', '_id name')
             .populate('followers', '_id name')
@@ -266,7 +309,7 @@ const photo = (request: IRequest, response: IResponse, next: Function) => {
 
 const defaultPhoto = (request: IRequest, response: IResponse) => {
     return response.sendFile(process.cwd() + profileImage);
-}
+};
 
 const userCount = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
@@ -274,14 +317,27 @@ const userCount = async (request: IRequest, response: IResponse): Promise<IRespo
             throw new Error('Oh no you dont')
         }
 
-        let users = await User.find({}).select('name email');
+        let users = await User.find({}).select('name email created');
         response.json({ count: users.length, users });
     } catch (error) {
         return response.status(400).json({
             error: errorHandler.getErrorMessage(error)
         });
     }
-}
+};
+
+const fetchUserAlias = async (request: IRequest, response: IResponse): Promise<IResponse> => {
+    try {
+        const userId = request.query.user_id;
+        const user = await User.findOne({ _id: userId }).select('alias');
+        console.log('found user alias: ', user)
+        response.json({ alias: user.alias });
+    } catch (error) {
+        return response.status(400).json({
+            error: errorHandler.getErrorMessage(error)
+        });
+    }
+};
 
 module.exports = {
     create,
@@ -292,5 +348,7 @@ module.exports = {
     defaultPhoto,
     userCount,
     populateOps,
-    anonymousLogin
+    anonymousLogin,
+    retrofitAliases,
+    fetchUserAlias
 };

@@ -8,6 +8,10 @@ const ChannelMessageSchema = new Schema({
         ref: 'User',
         required: 'User id is required'
     },
+    user_alias: {
+       type: String,
+       required: 'User alias is required'
+    },
     channel_id: {
         type: String,
         required: 'channel id is required.'
