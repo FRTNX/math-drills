@@ -50,8 +50,11 @@ const unPublishChannel = async (request, response) => {
     }
 };
 
+const listChannels = async (isAdmin: boolean = false) => {
+    if (isAdmin) {
+        return await Channel.find();
+    }
 
-const listChannels = async () => {
     const channels = await Channel.find({ visibility: 'public' });
     return channels;
 };
@@ -68,15 +71,17 @@ const listAllChannels = async (request, response) => {
     }
 };
 
-const isAdmin = async (userId, channelId) => {
+const isAdmin = async (userId: string, channelId?: string) => {
     const user = await User.findOne({ _id: userId }).select('alias');
 
-    const channel = await Channel.findOne({ channel_id: channelId });
+    if (channelId) {
+        const channel = await Channel.findOne({ channel_id: channelId });
+        const channelOpUserId = channel.channel_op.toString();
+        // todo: return ... || user.is_admin;
+        return channelOpUserId === userId || user.alias === 'frtnx';
+    }
 
-    const channelOpUserId = channel.channel_op.toString();
-
-    // todo: return ... || user.is_admin;
-    return channelOpUserId === userId || user.alias === 'frtnx';
+    return user.alias === 'frtnx';
 };
 
 const changeChannelOwnership = async (userId: string, channelId: string, passphrase: string) => {

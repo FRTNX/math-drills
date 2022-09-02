@@ -110,27 +110,60 @@ const setUserAttribute = async (userId: string, attribute: string, value: string
             console.log(error); // 👁: observe
             return { error: 'alias already exists. please choose another.' };
         }
-
     }
 };
 
 const handleChannelCmd = async (userId: string, userInput: string, channelId?: string): Promise<any> => {
     try {
-        if (userInput.toLowerCase() === '/list channels') {
-            const channels = await channelCtrl.listChannels();
+        if (userInput.toLowerCase().startsWith('/list ')) {
+            const [cmd, attribute] = userInput.split(' ');
 
-            const channelList = channels.map((channel: any) => `    ${channel.channel_id}`);
+            if (!attribute) {
+                throw new Error(`Invalid input: ${userInput}`)
+            }
 
-            return {
-                state: {
-                    mode: 'default',
-                    prompt: '$',
-                },
-                lines: [
-                    " public channels:",
-                    ...channelList
-                ]
-            };
+            const isAdmin: Promise<boolean> = await channelCtrl.isAdmin(userId);
+
+            if (attribute === 'channels') {
+                const channels = await channelCtrl.listChannels(isAdmin);
+
+                const channelList = channels.map((channel: any) => `  ${channel.channel_id}`);
+    
+                return {
+                    state: {
+                        mode: 'default',
+                        prompt: '$',
+                    },
+                    lines: [
+                        isAdmin
+                            ? "public channels:"
+                            : "all channels:",
+                        ...channelList
+                    ]
+                };
+            }
+
+            if (attribute === 'users') {
+                if (!isAdmin) {
+                    throw new Error(`Unauthorized: ${userInput}`)
+                }
+
+                const users = await User.find().select('name email created');
+
+                const userList = users.map((user: any) => `  ${user.name}, ${user.email}, ` +
+                    `${user.created.toString().slice(0, 15)}`);
+    
+                return {
+                    state: {
+                        mode: 'default',
+                        prompt: '$',
+                    },
+                    lines: [
+                        `users(${userList.length}):`,
+                        ...userList
+                    ]
+                };
+            }
         }
 
         if (userInput.toLowerCase() === '/exit') {
@@ -160,9 +193,9 @@ const handleChannelCmd = async (userId: string, userInput: string, channelId?: s
                 };
             }
 
-            const isAdmin: Promise<boolean> = await channelCtrl.isAdmin(userId, targetChannel);
+            const isChannelAdmin: Promise<boolean> = await channelCtrl.isAdmin(userId, targetChannel);
 
-            if (!isAdmin) {
+            if (!isChannelAdmin) {
                 // let drillbot handle the request
                 return handleInput(userId, userInput, 'GENERIC');
             }

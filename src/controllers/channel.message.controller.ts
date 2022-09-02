@@ -4,6 +4,10 @@ const User = require('../models/user.model');
 const ChannelMessage = require('../models/channel.message.model');
 
 const appendChannelMessage = async (userId: string, userInput: string, channelId: string) => {
+    if (userInput.startsWith('/')) {
+        return { message: 'CMD_OMIT' };
+    }
+    
     const user = await User.findOne({ _id: userId }).select('alias');
 
     const channelMessage = new ChannelMessage({
