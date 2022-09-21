@@ -18,7 +18,6 @@ const extend = require('lodash/extend');
 
 const profileImage = fs.readFileSync('./src/assets/images/p3.jpg');
 
-import { NoUnusedFragmentsRule } from 'graphql';
 import { IRequest, IResponse } from './controller.types';
 
 interface IRandomizedAnswer {

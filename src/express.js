@@ -1,0 +1,38 @@
+"use strict";
+exports.__esModule = true;
+var config = require('./../config/config').config;
+var cookieParser = require('cookie-parser');
+var compress = require('compression');
+var cors = require('cors');
+var helmet = require('helmet');
+var userRoutes = require('./routes/user.routes');
+var authRoutes = require('./routes/auth.routes');
+var opRoutes = require('./routes/operations.routes');
+var userAnswerRoutes = require('./routes/user.answer.routes');
+var userStatsRoutes = require('./routes/user.stats.routes');
+var terminalRoutes = require('./routes/terminal.routes');
+var channelRoutes = require('./routes/channel.routes');
+var express = require('express');
+var app = express();
+var logit = function (request, response, next) {
+    console.log('Request recieved: ', request.method, request.url);
+    next();
+};
+app.use(logit);
+app.use(express.json({ limit: config.request.limit }));
+app.use(express.urlencoded());
+app.use(cookieParser());
+app.use(compress());
+app.use(helmet());
+app.use(cors());
+app.use('/', userAnswerRoutes);
+app.use('/', userStatsRoutes);
+app.use('/', terminalRoutes);
+app.use('/', channelRoutes);
+app.use('/', userRoutes);
+app.use('/', authRoutes);
+app.use('/', opRoutes);
+app.use('*', function (request, response, next) {
+    return response.status(404).json({ message: 'Resource not found' });
+});
+module.exports = app;
