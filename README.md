@@ -51,7 +51,7 @@ TIP: This feature is especially useful when you create a channel as an anonymous
 
 ## Channel Management: Tactical Nukes with ```/nuke```
 
-The ```/nuke``` command allows you to delete all messages in a channel or all messages from a specific user. It behaves very much like the Thanos gauntlet, except less random. To delete delete activity by user:
+The ```/nuke``` command allows you to delete all messages in a channel or all messages from a specific user. It behaves very much like the Thanos gauntlet, except less random. To delete all activity (messages, login history, etc) by a specific user:
 [![Math Drills Terminal](src/assets/images/readme/nuke1.gif?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/nuke1.gif)
 
 And to nuke all channel activity:
@@ -83,7 +83,7 @@ Users can also keep track of their speed per operation.
 ## What's next?
 Some features are already in the pipeline to give more life to this web application:
 
-* irc bridge - This will allow Math Drills users to interact with IRC (liberachat) users. Currently the plan is to limit users to the irc ##math-drills channels as well as the ##math channel. So for example, if a user gets stuck on a drill, they can easily ask the internal Math Drills comminity, or login to IRC and ask their question(s) there.
+* irc bridge - This will allow Math Drills users to interact with IRC (liberachat) users. Currently the plan is to limit users to the irc ##math-drills channels as well as the ##math channel.
 
 * leaderboard - We all enjoy being the best in the world at something. The incoming leaderboard feature will help cultivate a competitive spirit amongst users.
 
@@ -92,8 +92,6 @@ Some features are already in the pipeline to give more life to this web applicat
 * recommendation engine - An AI-powered recommendation engine that identifies the best set of drills for each user.
 
 * syllabus-oriented drills - This will give users access to questions related to a specific syllabus and help them prepare for exams.
-
-* classrooms - Drill rooms + observation streams/endpoints for educators.
 
 ## Contributions
 Contributions are welcome.
