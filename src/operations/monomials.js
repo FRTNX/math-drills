@@ -97,7 +97,7 @@ var DIFFICULTY_PROFILES = {
         baseAward: [5, 7],
         timeAward: 1,
         timePenalty: 2,
-        tooltipIntro: 'Monomial City'
+        tooltipIntro: 'Monomial City. Exponents should be formatted as x^2 (x squared in this example). '
     }
 };
 var checkOccurances = function (array, element) {

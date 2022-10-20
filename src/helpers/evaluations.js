@@ -14,6 +14,14 @@ var evaluateAnswer = function (question, answer) {
     if (question.question_type === 'monomials') {
         var formattedAnswer = question.correct_answer.match(/[^{}]/g).join('');
         var userAnswer = answer.user_answer.replace(/\s/g, '');
+        console.log('here');
+        if (question.question_latex.replace(/\s/g, '') === question.correct_answer) {
+            console.log('IN TARGET');
+            if (answer.user_answer === '.') {
+                console.log('SECONDARY TARGET');
+                return { isCorrect: true, correctAnswer: question.correct_answer };
+            }
+        }
         if (formattedAnswer === userAnswer) {
             return { isCorrect: true, correctAnswer: question.correct_answer };
         }
