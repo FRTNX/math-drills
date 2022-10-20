@@ -9,6 +9,7 @@ interface IUserAnswer {
 }
 
 interface IOptions {
+    calculate?: boolean,
     division?: {
         styles?: Array<string>
     },
@@ -24,7 +25,7 @@ interface IEvaluation {
 
 // responsible for general and custom evaluations for all question types.
 const evaluateAnswer = (question: IQuestion, answer: IUserAnswer): IEvaluation => {
-    if (question.question_type == 'prime_factorization') {
+    if (question.question_type === 'prime_factorization') {
         const userAnswer = answer.user_answer.match(/\d+/g).map((prime) => Number(prime)).sort();
         const formattedCorrectAnswer = JSON.parse(question.correct_answer).join('\\cdot');
 
@@ -33,6 +34,17 @@ const evaluateAnswer = (question: IQuestion, answer: IUserAnswer): IEvaluation =
         }
 
         return { isCorrect: true, correctAnswer: formattedCorrectAnswer };
+    }
+
+    if (question.question_type === 'monomials') {
+        const formattedAnswer = question.correct_answer.match(/[^{}]/g).join('');
+        const userAnswer = answer.user_answer.replace(/\s/g, '');
+
+        if (formattedAnswer === userAnswer) {
+            return { isCorrect: true, correctAnswer: question.correct_answer };
+        }
+
+        return { isCorrect: false, correctAnswer: question.correct_answer };
     }
 
     if (Number(answer.user_answer) !== Number(question.correct_answer)) {
@@ -61,7 +73,13 @@ const generateQuestionLatex = (operator: string, terms: Array<number>,
             ? formattedTerms.join(' + ')
             : terms.join(' + ');
 
-        correctAnswer = terms.reduce((partSum, value) => partSum + value, 0);
+        const calculate = options.calculate
+            ? options.calculate
+            : true
+
+        if (calculate) {
+            correctAnswer = terms.reduce((partSum, value) => partSum + value, 0);
+        }
     }
 
     // SUBTRACTION
@@ -70,12 +88,24 @@ const generateQuestionLatex = (operator: string, terms: Array<number>,
             ? formattedTerms.join(' - ')
             : terms.join(' - ');
 
-        correctAnswer = terms.slice(1).reduce((diff, value) => diff - value, terms[0]);
+        const calculate = options.calculate
+            ? options.calculate
+            : true
+
+        if (calculate) {
+            correctAnswer = terms.slice(1).reduce((diff, value) => diff - value, terms[0]);
+        }
     }
 
     // MULTIPLICATION
     if (operator === 'multiplication') {
-        correctAnswer = terms.reduce((partProd, value) => partProd * value, 1);
+        const calculate = options.calculate
+            ? options.calculate
+            : true
+
+        if (calculate) {
+            correctAnswer = terms.reduce((partProd, value) => partProd * value, 1);
+        }
 
         let styles: Array<string> = options.multiplication
             ? options.division.styles
@@ -128,7 +158,13 @@ const generateQuestionLatex = (operator: string, terms: Array<number>,
                 : `\\frac{${terms[0]}}{${terms[1]}}`;
         }
 
-        correctAnswer = terms.slice(1).reduce((quotient, value) => quotient / value, terms[0]);
+        const calculate = options.calculate
+            ? options.calculate
+            : true
+
+        if (calculate) {
+            correctAnswer = terms.slice(1).reduce((quotient, value) => quotient / value, terms[0]);
+        }
     }
 
     return [questionLatex, correctAnswer];

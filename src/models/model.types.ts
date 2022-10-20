@@ -2,7 +2,7 @@
 export type QuestionType = 'addition' | 'subtraction' | 'multiplication' | 'division' |
     'fractions' | 'decimals' | 'prime_factorization' | 'lcm' | 'hcf' |
     'exponents' | 'scientific_notation' | 'radicals' | 'summation' | 'percentage' |
-    'logarithms';
+    'logarithms' | 'monomials';
 
 export interface IQuestion {
     _id?: string,

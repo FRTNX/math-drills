@@ -19,6 +19,7 @@
         "./src/operations/scientific.notation.ts",
         "./src/operations/subtraction.ts",
         "./src/operations/summation.ts",
+        "./src/operations/monomials.ts",
         "./src/models/aborted.question.model.ts",
         "./src/models/question.model.ts",
         "./src/models/user.answer.model.ts",
