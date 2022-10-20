@@ -45,7 +45,6 @@ const populateRandomizedData = async (userId: string, operation?: string) => {
         questionTypes = await Question.find({}).distinct('question_type');
     }
 
-
     const result = await Promise.all(questionTypes.map(async (questionType) => {
         const alreadyRandomized = await UserAnswer.exists({
             user_id: userId,
@@ -60,9 +59,7 @@ const populateRandomizedData = async (userId: string, operation?: string) => {
         }
 
         const numberOfQuestions: number = random(11, 20);
-
         const randomizedAnswers: Array<IRandomizedAnswer> = [];
-
         const incorrectAnswers: number = random(3, 5);
         const correctAnswers: number = numberOfQuestions - incorrectAnswers;
 

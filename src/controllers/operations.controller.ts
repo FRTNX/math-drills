@@ -28,6 +28,7 @@ const exponents = require('../operations/exponents');
 const radicals = require('../operations/radicals');
 
 const summation = require('../operations/summation');
+const monomials = require('../operations/monomials');
 
 const got = require('got');
 
@@ -86,6 +87,7 @@ const OPERATIONS_MAP = {
     summation: summation,
     percentage: percentage,
     logarithms: logarithm,
+    monomials: monomials
 };
 
 // if there's no question in the db matching requested criterea

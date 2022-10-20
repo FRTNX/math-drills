@@ -60,7 +60,8 @@ wss.on('connection', (ws) => {
                         lines: ['ping']
                     }));
     
-                    // keep heroku from idling while a socket is open
+                    // still getting disconnections even after moving from heroku
+                    // to koyeb. todo: look into how lichess does it.
                     got(config.serverPingUrl);
                 }, 10000);
     
@@ -121,7 +122,7 @@ wss.on('connection', (ws) => {
                         }
                     }));
     
-                    // stop socket maintanance ops
+                    // stop socket maintanance ops (ping-pong)
                     clearInterval(client.pingIntervalId);
     
                     // remove user client

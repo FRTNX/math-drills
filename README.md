@@ -3,7 +3,9 @@ Math Drills Server
 
 Achieve math mastery through continuous testing.
 
-Math Drills is still in early development and is hosted on Heroku here: https://math-drills-beta.herokuapp.com
+Math Drills is still in early development and is hosted here: https://drills.vercel.app
+
+The developer is looking for a good job. Contact frtnx@protonmail.com
 
 [![Math Drills home page](src/assets/images/readme/1.png?raw=true "Math Drills Summation")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/1.png)
 
@@ -12,20 +14,60 @@ Military-style drills, for math.
 
 Math Drills offers a near infinite number of questions to sharpen the mind on. Currently most common math operations are supported, and more are constantly being added. Eventually the drills will encompass all of mathematics at every level.
 
+
 ## Features
-### Built-in Terminal
-[![Math Drills Terminal](src/assets/images/readme/md2.gif?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/md2.gif)
 
-Math Drills features a built in terminal. This terminal can be used to talk to DrillBot, the resident AI. More terminal features are currently being built, such as community channels that mimic irc, along with actual irc integrations. The terminal will typically be the main social feature as users will be able to have chats and ask questions through it.
+## Built-in Terminal
+Math Drills features a built in terminal. The terminal may be used to talk to Drillbot, the resident AI. The terminal may also be used to communicate with other users. More details below.
 
-So as to provide ease of access the terminal may be accessed from both the drills and the stats page or wherever the below icon appears, which allows the terminal to be expanded or hidden:
-[![Math Drills Terminal 2](src/assets/images/readme/md3.gif?raw=true "Math Drills Terminal")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/md3.gif)
-### Hints
+## Conversational AI: Drillbot
+[![Math Drills Terminal](src/assets/images/readme/drillbot.gif?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/drillbot.gif)
+
+
+All input made outside a chat channel is processed by Drillbot. Talk about anything. It still has a long way to go but it already makes for fun interactions.
+
+
+## Live Chats: Infinite Chat Channels
+[![Math Drills Terminal](src/assets/images/readme/channels.gif?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/channels.gif)
+
+Join an existing channel or create a new one with the ```/join <channelname>``` command. If the channel does not exist it will be created with you as the owner. There is no limit to the number of channels you can create, no limit on the number of users in any channel. This may change if abused. 
+
+## Unique Identifiers: Custom Aliases
+[![Math Drills Terminal](src/assets/images/readme/aliases.gif?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/aliases.gif)
+
+Set a unique alias so other users know who you are. For display purposes, aliases are limited to 5 characters (emojis and symbols work too). The 5 character limit will likely be dropped once the IRC integrations kick into gear. You can change your alias as often as you like. If the alias isn't already used by someone else, its yours for the taking.
+
+## Flexibility: Channel Ownership Transfer
+
+When you create a new channel you become its owner. Owning a channel allows you to manage its content with commands like ```/nuke``` (see Channel Management section below). Sometimes it is desirable to let other trusted users manage the channel. This can be done by enabling the ```/chown``` command on your channel:
+[![Math Drills Terminal](src/assets/images/readme/chown1.gif?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/chown1.gif)
+
+Once enabled, simply share the channel name and password with your trusted circle. These trusted users will then be able to assume channel ownership:
+[![Math Drills Terminal](src/assets/images/readme/chown2.gif?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/chown2.gif)
+
+You can easily disable ```/chown``` or change the transfer password. Type in ```/chown help``` outside a channel for a list of ```/chown``` options. Note that only one user may have ownership of a channel at any point in time, so choose your circle wisely.
+
+TIP: This feature is especially useful when you create a channel as an anonymous user and would like to transfer channel ownership to other (anonymous or regular) users.
+
+## Channel Management: Tactical Nukes with ```/nuke```
+
+The ```/nuke``` command allows you to delete all messages in a channel or all messages from a specific user. It behaves very much like the Thanos gauntlet, except less random. To delete all activity (messages, login history, etc) by a specific user:
+[![Math Drills Terminal](src/assets/images/readme/nuke1.gif?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/nuke1.gif)
+
+And to nuke all channel activity:
+[![Math Drills Terminal](src/assets/images/readme/nuke2.gif?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/nuke2.gif)
+
+## Privacy: Anonymous Login
+Math Drills does not care who you are. You can login anonymously with one click, without providing your name and email or setting a password. The only limitation to anonymous users is the ability to set custom aliases (as that would be self-defeating).
+
+[![Math Drills Terminal](src/assets/images/readme/anonymous.png?raw=true "Math Drills Terminal + Drillbot")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/anonymous.png)
+
+## Hints
 To get a hint about the current question simply hover your mouse over it. On mobile you can hold the area on the right hand side of the question to the same effect. This displays a unique tooltip for every operation and every level within each operation.
 
 [![Math Drills home page 2](src/assets/images/readme/2.png?raw=true "Math Drills Exponents Tooltip")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/2.png)
 
-### Performance Stats
+## Performance Stats
 Users can keep track of their performance using the performance stats page.
 
 [![Math Drills stats page](src/assets/images/readme/3.png?raw=true "Math Drills Stats 1")](https://github.com/FRTNX/math-drills/blob/master/src/assets/images/readme/3.png)
@@ -41,7 +83,7 @@ Users can also keep track of their speed per operation.
 ## What's next?
 Some features are already in the pipeline to give more life to this web application:
 
-* irc bridge - Since Math Drills users can't yet interact with each other I've decided to persue the social dimension by creating a bridge to liberachat's ##math channel. This will alllow users to interact with liberachat users as well as other Math Drills users, all without leaving the web app.
+* irc bridge - This will allow Math Drills users to interact with IRC (liberachat) users. Currently the plan is to limit users to the irc ##math-drills channels as well as the ##math channel.
 
 * leaderboard - We all enjoy being the best in the world at something. The incoming leaderboard feature will help cultivate a competitive spirit amongst users.
 
@@ -51,10 +93,8 @@ Some features are already in the pipeline to give more life to this web applicat
 
 * syllabus-oriented drills - This will give users access to questions related to a specific syllabus and help them prepare for exams.
 
-* classrooms - Drill rooms + observation streams/endpoints for educators.
-
 ## Contributions
-Contributions are welcome. I've made the backend code very modular so that new operations can be added with minimal code and without need to update the frontend. That said, I have sinned and will soon repent: (sin #1) All the code is written in Node.js and eventually needs to be converted to TypeScript. I figured I'd build as much I can then write annotations later. As the codebase has grown I now see the error of my ways. (sin #2) For commissioned projects I'm always Mr. TDD. With side projects however... At  the time of writing the codebase is generally bug-free, having explored all features rigorously. Still, there are no tests. I'll be using the mocha-sinon-chai test suite for this task. Test coverage for all the code I've written is my responsibility so I won't be accepting any contributions there. However all new proposed features must be fully tested.
+Contributions are welcome.
 
 ### Update
 TypeScript conversion complete.

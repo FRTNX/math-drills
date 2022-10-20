@@ -3,13 +3,21 @@ exports.__esModule = true;
 var random = require('../helpers/random');
 // responsible for general and custom evaluations for all question types.
 var evaluateAnswer = function (question, answer) {
-    if (question.question_type == 'prime_factorization') {
+    if (question.question_type === 'prime_factorization') {
         var userAnswer = answer.user_answer.match(/\d+/g).map(function (prime) { return Number(prime); }).sort();
         var formattedCorrectAnswer = JSON.parse(question.correct_answer).join('\\cdot');
         if (JSON.stringify(userAnswer) !== question.correct_answer) {
             return { isCorrect: false, correctAnswer: formattedCorrectAnswer };
         }
         return { isCorrect: true, correctAnswer: formattedCorrectAnswer };
+    }
+    if (question.question_type === 'monomials') {
+        var formattedAnswer = question.correct_answer.match(/[^{}]/g).join('');
+        var userAnswer = answer.user_answer.replace(/\s/g, '');
+        if (formattedAnswer === userAnswer) {
+            return { isCorrect: true, correctAnswer: question.correct_answer };
+        }
+        return { isCorrect: false, correctAnswer: question.correct_answer };
     }
     if (Number(answer.user_answer) !== Number(question.correct_answer)) {
         return { isCorrect: false, correctAnswer: question.correct_answer };
@@ -34,18 +42,33 @@ var generateQuestionLatex = function (operator, terms, formattedTerms, options) 
         questionLatex = formattedTerms.length !== 0
             ? formattedTerms.join(' + ')
             : terms.join(' + ');
-        correctAnswer = terms.reduce(function (partSum, value) { return partSum + value; }, 0);
+        var calculate = options.calculate
+            ? options.calculate
+            : true;
+        if (calculate) {
+            correctAnswer = terms.reduce(function (partSum, value) { return partSum + value; }, 0);
+        }
     }
     // SUBTRACTION
     if (operator === 'subtraction') {
         questionLatex = formattedTerms.length !== 0
             ? formattedTerms.join(' - ')
             : terms.join(' - ');
-        correctAnswer = terms.slice(1).reduce(function (diff, value) { return diff - value; }, terms[0]);
+        var calculate = options.calculate
+            ? options.calculate
+            : true;
+        if (calculate) {
+            correctAnswer = terms.slice(1).reduce(function (diff, value) { return diff - value; }, terms[0]);
+        }
     }
     // MULTIPLICATION
     if (operator === 'multiplication') {
-        correctAnswer = terms.reduce(function (partProd, value) { return partProd * value; }, 1);
+        var calculate = options.calculate
+            ? options.calculate
+            : true;
+        if (calculate) {
+            correctAnswer = terms.reduce(function (partProd, value) { return partProd * value; }, 1);
+        }
         var styles = options.multiplication
             ? options.division.styles
             : ['default', 'dot', 'brackets'];
@@ -87,7 +110,12 @@ var generateQuestionLatex = function (operator, terms, formattedTerms, options) 
                 ? "\\frac{" + formattedTerms[0] + "}{" + formattedTerms[1] + "}"
                 : "\\frac{" + terms[0] + "}{" + terms[1] + "}";
         }
-        correctAnswer = terms.slice(1).reduce(function (quotient, value) { return quotient / value; }, terms[0]);
+        var calculate = options.calculate
+            ? options.calculate
+            : true;
+        if (calculate) {
+            correctAnswer = terms.slice(1).reduce(function (quotient, value) { return quotient / value; }, terms[0]);
+        }
     }
     return [questionLatex, correctAnswer];
 };

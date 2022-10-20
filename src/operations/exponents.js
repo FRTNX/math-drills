@@ -181,7 +181,7 @@ var exponents = function (operation, difficulty) { return __awaiter(void 0, void
                     if (exponent !== 1) {
                         hasExponent = true;
                     }
-                    // if this is the last term and no expnent has been used
+                    // if this is the last term and no exponent has been used
                     // so far, force the use of an exponent greater than one within difficulty range
                     if (i === numberOfTerms - 1 && !hasExponent) {
                         exponent = difficultyProfile.exponents[random(1, difficultyProfile.exponents.length)];

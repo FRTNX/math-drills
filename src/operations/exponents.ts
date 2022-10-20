@@ -123,7 +123,7 @@ const exponents = async (operation: string, difficulty: number): Promise<IQuesti
             hasExponent = true;
         }
 
-        // if this is the last term and no expnent has been used
+        // if this is the last term and no exponent has been used
         // so far, force the use of an exponent greater than one within difficulty range
         if (i === numberOfTerms - 1 && !hasExponent) {
             exponent = difficultyProfile.exponents[random(1, difficultyProfile.exponents.length)];

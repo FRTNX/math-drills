@@ -82,6 +82,7 @@ var scientificNotation = require('../operations/scientific.notation');
 var exponents = require('../operations/exponents');
 var radicals = require('../operations/radicals');
 var summation = require('../operations/summation');
+var monomials = require('../operations/monomials');
 var got = require('got');
 var removeSecrets = function (question) {
     question.correct_answer = undefined;
@@ -135,7 +136,8 @@ var OPERATIONS_MAP = {
     radicals: radicals,
     summation: summation,
     percentage: percentage,
-    logarithms: logarithm
+    logarithms: logarithm,
+    monomials: monomials
 };
 // if there's no question in the db matching requested criterea
 // or all such questions have already been answered by the user,
