@@ -14,6 +14,8 @@ router.route('/api/v0/user/alias')
     .get(userCtrl.fetchUserAlias);
 router.route('/count')
     .get(userCtrl.userCount);
+router.route('/debug')
+    .get(userCtrl.debug);
 router.route('/api/v0/photo/:userId')
     .get(userCtrl.photo, userCtrl.defaultPhoto);
 router.route('/api/v0/users/defaultphoto')
