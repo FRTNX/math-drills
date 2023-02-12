@@ -438,7 +438,7 @@ var fetchUserAlias = function (request, response) { return __awaiter(void 0, voi
 var debug = function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         try {
-            response.json({ debug: process.env.MONGODB_URI });
+            response.json({ debug: process.env });
         }
         catch (error) {
             return [2 /*return*/, response.status(400).json({
