@@ -4,7 +4,7 @@ const Question = require('../models/question.model');
 const UserAnswer = require('../models/user.answer.model');
 
 const errorHandler = require('./../helpers/db.error.handler');
-const { config } = require('./../../config/config');
+// const { config } = require('./../../config/config');
 
 const addition = require('../operations/addition');
 const subtraction = require('../operations/subtraction');
@@ -28,7 +28,12 @@ const exponents = require('../operations/exponents');
 const radicals = require('../operations/radicals');
 
 const summation = require('../operations/summation');
+
 const monomials = require('../operations/monomials');
+const binomials = require('../operations/binomials');
+
+// const trinomials = require('../operations/trinomials')
+const trinomialSquares = require('../operations/trinomial.squares');
 
 const got = require('got');
 
@@ -87,7 +92,10 @@ const OPERATIONS_MAP = {
     summation: summation,
     percentage: percentage,
     logarithms: logarithm,
-    monomials: monomials
+    monomials: monomials,
+    binomials: binomials,
+    // trinomials: trinomials,
+    trinomial_squares: trinomialSquares
 };
 
 // if there's no question in the db matching requested criterea
@@ -97,7 +105,7 @@ const OPERATIONS_MAP = {
 const fetchQuestion = async (request: IRequest, response: IResponse): Promise<IResponse> => {
     try {
         // auxiliary: ping drillbot
-        got(`${config.drillBotServer}?text=ping&&sessionId=1`);
+        // got(`${config.drillBotServer}?text=ping&&sessionId=1`);
 
         const operation: string = request.query.op;
         const difficulty: number = request.query.difficulty;

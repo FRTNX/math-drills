@@ -1,5 +1,7 @@
 export { };
 
+const random = require('../helpers/random');
+
 const authCtrl = require('../controllers/auth.controller');
 const userStatsCtrl = require('../controllers/user.stats.controller');
 
@@ -21,5 +23,10 @@ router.route('/api/v0/user/rating')
 
 router.route('/api/v0/user/speed')
     .get(userStatsCtrl.fetchSpeedStats);
+
+router.route('/api/v0/random/number')
+    .get((request, response) => {
+        return response.status(200).json(random(0, 101))
+    });
 
 module.exports = router;

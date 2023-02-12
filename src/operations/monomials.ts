@@ -19,7 +19,7 @@ const DIFFICULTY_PROFILES = {
         baseAward: [5, 7],
         timeAward: 1,
         timePenalty: 2,
-        tooltipIntro: 'Monomial City'
+        tooltipIntro: 'Monomial City. Exponents should be formatted as x^2 (x squared in this example). '
     }
 };
 
@@ -38,7 +38,7 @@ function uniqueElements(value, index, self) {
     return self.indexOf(value) === index;
 };
 
-const exponents = async (operation: string, difficulty: number): Promise<IQuestion> => {
+const monomials = async (operation: string, difficulty: number): Promise<IQuestion> => {
     const difficultyProfile = DIFFICULTY_PROFILES[difficulty];
 
     const terms: Array<string> = [];
@@ -56,14 +56,14 @@ const exponents = async (operation: string, difficulty: number): Promise<IQuesti
         const factors: Array<string> = [];
 
         for (let j = 0; j < numberOfFactors; j++) {
-            const selectedFactor: string = difficultyProfile.literals[
+            const selectedLiteral: string = difficultyProfile.literals[
                 random(0, difficultyProfile.literals.length)
             ];
 
             let targetIndex: number;
 
             factors.map((factor, index) => {
-                if (factor.includes(selectedFactor)) {
+                if (factor.includes(selectedLiteral)) {
                     targetIndex = index;
                 }
             });
@@ -71,20 +71,19 @@ const exponents = async (operation: string, difficulty: number): Promise<IQuesti
             if (typeof targetIndex === 'number') {
                 if (factors[targetIndex].match(/\d+/g)) {
                     let coefficient = factors[targetIndex].match(/\d+/g)[0]
-                    factors[targetIndex] = `${Number(coefficient) + 1}${selectedFactor}`;
+                    factors[targetIndex] = `${Number(coefficient) + 1}${selectedLiteral}`;
                 }
 
                 else {
-                    factors[targetIndex] = `2${selectedFactor}`;
+                    factors[targetIndex] = `2${selectedLiteral}`;
                 }
             }
 
             else {
-                factors.push(selectedFactor);
+                factors.push(selectedLiteral);
             }
         }
 
-        console.log('selected factors: ', factors)
         const coefficients = [];
         const literals = [];
 
@@ -166,7 +165,6 @@ const exponents = async (operation: string, difficulty: number): Promise<IQuesti
         if (operator === 'multiplication') {
             if (formattedTerms.length === 2) {
                 const coefficient = formattedTerms[0].coefficient * formattedTerms[1].coefficient;
-                console.log('coefficient product:', coefficient)
                 const literalFactors = [];
                 formattedTerms.map((term) => {
                     term.literals.split('').map((literal: string) => {
@@ -174,22 +172,16 @@ const exponents = async (operation: string, difficulty: number): Promise<IQuesti
                     });
                 });
 
-                console.log('literal factors:', literalFactors)
-
                 const uniqueLiterals = literalFactors.filter(uniqueElements).sort();
-                console.log('unique literals:', uniqueLiterals)
 
                 const literalPoduct = uniqueLiterals
                     .map((literal) => {
                         const occurances = checkOccurances(literalFactors, literal);
-                        console.log('occurances:', occurances)
                         return occurances === 1
                             ? `${literal}`
                             : `${literal}^{${occurances}}`;
                     })
                     .join('');
-
-                console.log('literal product:', literalPoduct)
 
                 coefficient === 0
                     ? correctAnswer = '0'
@@ -248,7 +240,7 @@ const tooltips = Object.keys(DIFFICULTY_PROFILES).map((difficulty) => {
 });
 
 module.exports = {
-    exec: exponents,
+    exec: monomials,
     levels: Object.keys(DIFFICULTY_PROFILES).map((level) => Number(level)),
     tooltips: tooltips.reduce((data, value) => ({ ...data, ...value }), {})
 };
